@@ -6,6 +6,7 @@ Created on Mon Jun 20 19:36:28 2022
 """
 
 import numpy
+import scipy.stats
 
 def mcol(v):
     return v.reshape((v.size, 1))
@@ -25,11 +26,43 @@ def compute_cov(X, Y = None):
 def center_data(D):
     return D - compute_mean(D)
 
-def compute_PCA(D, dims):
+def z_normalize(DTR, DTE):
+    return scipy.stats.zscore(DTR, axis=1), scipy.stats.zscore(DTE, axis=1)
+
+def gaussianize(DTR, DTE):
+    rankTR = numpy.zeros(DTR.shape)
+    for i in range(DTR.shape[0]):
+        for j in range(DTR.shape[1]):
+            rankTR[i][j] += (DTR[i] < DTR[i][j]).sum() + 1
+    rankTR /= DTR.shape[1] + 2
+    
+    rankTE = numpy.zeros(DTR.shape)
+    for i in range(DTR.shape[0]):
+        for j in range(DTR.shape[1]):
+            rankTE[i][j] += (DTR[i] < DTE[i][j]).sum() + 1
+    rankTE /= DTR.shape[1] + 2
+    
+    return scipy.stats.norm.ppf(rankTR), scipy.stats.norm.ppf(rankTE)
+
+def pearsonCorrelation(DTR):
+    pearsonCorrelationMatrix = numpy.zeros((DTR.shape[0], DTR.shape[0]))
+    for i in range(DTR.shape[0]):
+        for j in range(DTR.shape[0]):
+            pearsonCorrelationMatrix[i][j] += abs(compute_cov(DTR[i], DTR[j])/(compute_cov(DTR[i]) ** 0.5 * compute_cov(DTR[j]) ** 0.5))
+        
+    return pearsonCorrelationMatrix
+
+def compute_PCA(C, D, L, m):    
+    s, U = numpy.linalg.eigh(C)
+    P = U[:, ::-1][:, 0:m]
+    DP = numpy.dot(P.T, D)
+    
+    return DP
+
+def apply_PCA(D, L, m):
     DC = center_data(D)
     C = (numpy.dot(DC, DC.T))/D.shape[1]
-    s, U = numpy.linalg.eigh(C)
-    return U[:, ::-1][:, 0:dims], s[::-1], DC
+    return compute_PCA(C, D, L, m)
 
 def K_folds_split(dataset, labels, folds=3):
     dataset_split = []
@@ -44,23 +77,24 @@ def K_folds_split(dataset, labels, folds=3):
         idxs = numpy.delete(idxs, [range(fold_size)])
     return dataset_split
 
-def computeConfusionMatrix(predictions, labels, classesDict):
-    numClasses = len(classesDict)
-    matrix = numpy.zeros((numClasses, numClasses))
+def computeConfusionMatrix(predictions, labels):
+    C = numpy.zeros((2, 2))
     
-    for i in range(len(labels)):
-        matrix[predictions[i]][labels[i]] += 1
+    C[0, 0] = ((predictions == 0) * (labels == 0)).sum()
+    C[0, 1] = ((predictions == 0) * (labels == 1)).sum()
+    C[1, 0] = ((predictions == 1) * (labels == 0)).sum()
+    C[1, 1] = ((predictions == 1) * (labels == 1)).sum()
     
-    return matrix
+    return C
 
-def computeMinDCF(ll_ratios, negPrior, Cfn, Cfp, labels, classesDict):
+def computeMinDCF(ll_ratios, negPrior, Cfn, Cfp, labels):
     sorted_lls = numpy.array(ll_ratios)
     sorted_lls.sort()
     ths = numpy.concatenate([numpy.array([-numpy.inf]), sorted_lls, numpy.array([numpy.inf])])
     dcfs = []
     
     for th in ths:
-        dcf, dcf_norm = computeDCF(ll_ratios, negPrior, Cfn, Cfp, labels, classesDict, th)
+        dcf, dcf_norm = computeDCF(ll_ratios, negPrior, Cfn, Cfp, labels, th)
         dcfs.append(dcf_norm)
     
     return numpy.array(dcfs).min()
@@ -80,9 +114,9 @@ def computeFNR(FN, TP):
 def computeTPR(FN, TP):
     return 1 - computeFNR(FN, TP)
 
-def computeDCF(ll_ratios, negPrior, Cfn, Cfp, labels, classesDict, th = None):
+def computeDCF(ll_ratios, negPrior, Cfn, Cfp, labels, th = None):
     predictions = computeBinaryOptimalBayesDecisions(ll_ratios, negPrior, Cfn, Cfp, th)
-    confMatrix = computeConfusionMatrix(predictions, labels, classesDict)
+    confMatrix = computeConfusionMatrix(predictions, labels)
     dummyDCF = numpy.min([negPrior * Cfn, (1 - negPrior) * Cfp])
     FPR = computeFPR(confMatrix[1][0], confMatrix[0][0])
     FNR = computeFNR(confMatrix[0][1], confMatrix[1][1])
@@ -90,7 +124,7 @@ def computeDCF(ll_ratios, negPrior, Cfn, Cfp, labels, classesDict, th = None):
     
     return DCF, DCF/dummyDCF
 
-def computeParametersForRoc(ll_ratios, labels, classesDict):
+def computeParametersForRoc(ll_ratios, labels):
     sorted_lls = numpy.array(ll_ratios)
     sorted_lls.sort()
     ths = numpy.concatenate([numpy.array([-numpy.inf]), sorted_lls, numpy.array([numpy.inf])])
@@ -99,7 +133,7 @@ def computeParametersForRoc(ll_ratios, labels, classesDict):
     
     for th in ths:
         predictions = computeBinaryOptimalBayesDecisions(ll_ratios, None, None, None, th)
-        confMatrix = computeConfusionMatrix(predictions, labels, classesDict)
+        confMatrix = computeConfusionMatrix(predictions, labels)
         TPR = computeTPR(confMatrix[0][1], confMatrix[1][1])
         TPRs.append(TPR)
         FPR = computeFPR(confMatrix[1][0], confMatrix[0][0])
