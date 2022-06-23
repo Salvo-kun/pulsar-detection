@@ -8,6 +8,7 @@ Created on Tue Jun 21 13:22:41 2022
 import numpy
 import scipy
 import utils
+import time
 
 def logpdf_GAU_ND(X, mu, C):
     P = numpy.linalg.inv(C)
@@ -102,15 +103,293 @@ def logreg_obj_wrap(DTR, LTR, l):
 
 def compute_linear_LR(DTR, LTR, DTE, l, p):
     logreg_obj = logreg_obj_wrap(DTR, LTR, l)
-    x, f, d = scipy.optimize.fmin_l_bfgs_b(logreg_obj, numpy.zeros(DTR.shape[0] + 1), approx_grad = True)
+    t = time.time()
+    x, f, d = scipy.optimize.fmin_l_bfgs_b(logreg_obj, numpy.zeros(DTR.shape[0] + 1), approx_grad = True, factr=1.0)
+    print(f'Elapsed {time.time() - t} seconds')
     w, b = utils.mcol(x[0:-1]), x[-1]
     scores = numpy.dot(w.T, DTE) + b - numpy.log(p/(1-p))
     
     return scores[0, :]
 
+# def logreg_quad_obj_wrap(DTR, LTR, l):
+#     z = LTR * 2.0 - 1.0
+#     def logreg_quad_obj(v):
+#         A, b, c = v[0:DTR.shape[0]**2].reshape((DTR.shape[0], DTR.shape[0])), utils.mcol(v[0:DTR.shape[0]]), v[-1]
+#         w = numpy.vstack([utils.mcol(A), b])
+#         reg = 0.5 * l * numpy.linalg.norm(w) ** 2
+#         s = numpy.dot(DTR.T, numpy.dot(A, DTR)) + numpy.dot(b.T, DTR) + c
+#         avg_risk = (numpy.logaddexp(0, -s*z)).mean()
+#         return reg + avg_risk
+#     return logreg_quad_obj
+
+# def compute_quadratic_LR(DTR, LTR, DTE, l, p):
+#     logreg_quad_obj = logreg_quad_obj_wrap(DTR, LTR, l)
+#     t = time.time()
+#     x, f, d = scipy.optimize.fmin_l_bfgs_b(logreg_quad_obj, numpy.zeros(DTR.shape[0]*(DTR.shape[0] + 1) + 1), approx_grad = True, factr=1.0)
+#     print(f'Elapsed {time.time() - t} seconds')
+#     A, b, c = x[0:DTR.shape[0]**2].reshape((DTR.shape[0], DTR.shape[0])), utils.mcol(x[0:DTR.shape[0]]), x[-1]
+#     scores = numpy.dot(DTE.T, numpy.dot(A, DTE)) + numpy.dot(b.T, DTE) + c - numpy.log(p/(1-p))
+#     return scores[0, :]
+
+def expandFeatures(x):
+    x = utils.mcol(x)
+    expX = utils.mcol(numpy.dot(x, x.T))
+    return numpy.vstack([expX, x])
+
+def logreg_quad_obj_wrap(DTR, LTR, l):
+    z = LTR * 2.0 - 1.0
+    def logreg_quad_obj(v):
+        w, b = utils.mcol(v[0:-1]), v[-1]
+        reg = 0.5 * l * numpy.linalg.norm(w) ** 2
+        s = numpy.dot(w.T, DTR) + b 
+        avg_risk = (numpy.logaddexp(0, -s*z)).mean()
+        return reg + avg_risk
+    return logreg_quad_obj
+
 def compute_quadratic_LR(DTR, LTR, DTE, l, p):
-    logreg_obj = logreg_obj_wrap(DTR, LTR, l)
-    x, f, d = scipy.optimize.fmin_l_bfgs_b(logreg_obj, numpy.zeros(DTR.shape[0] + 1), approx_grad = True)
+    DTR_ext = numpy.hstack([expandFeatures(DTR[:, i]) for i in range(DTR.shape[1])])
+    DTE_ext = numpy.hstack([expandFeatures(DTE[:, i]) for i in range(DTE.shape[1])])
+    logreg_quad_obj = logreg_quad_obj_wrap(DTR_ext, LTR, l)
+    t = time.time()
+    x, f, d = scipy.optimize.fmin_l_bfgs_b(logreg_quad_obj, numpy.zeros(DTR_ext.shape[0] + 1), approx_grad = True, factr=1.0)
+    print(f'Elapsed {time.time() - t} seconds')
     w, b = utils.mcol(x[0:-1]), x[-1]
-    scores = numpy.dot(w.T, DTE) + b - numpy.log(p/(1-p))
-    return scores
+    scores = numpy.dot(w.T, DTE_ext) + b - numpy.log(p/(1-p))
+    
+    return scores[0, :]
+
+def trainLinearSVM(DTR, LTR, K, C, DTE, p = 0):
+    Z = LTR * 2.0 - 1.0
+    X_hat = numpy.vstack([DTR, K * numpy.ones((1, DTR.shape[1]))])
+    G = numpy.dot(X_hat.T, X_hat)
+    H_hat = utils.mcol(Z) * utils.mrow(Z) * G
+    empP = (LTR == 1).sum()/len(LTR)
+    alphaBounds = numpy.array([(0, C)] * LTR.shape[0])
+    
+    if p != 0:
+        alphaBounds[LTR == 1] = (0, C*p/empP)
+        alphaBounds[LTR == 0] = (0, C*(1-p)/(1-empP))
+    
+    def computeDualLoss(alpha):   
+        return 0.5 * numpy.dot(numpy.dot(utils.mrow(alpha), H_hat), alpha) - alpha.sum(), numpy.dot(H_hat, alpha) - 1
+        
+    def computePrimalFromDual(alpha):
+        w_hat = numpy.dot(alpha, (Z * X_hat).T)
+        w = w_hat[:-1]
+        b = w_hat[-1::]                
+        return w_hat, w, b
+    
+    def computeSVMScore(w, b):
+        return numpy.dot(w.T, DTE) + b*K
+    
+    t = time.time()
+    alphaStar, x, y = scipy.optimize.fmin_l_bfgs_b(
+        computeDualLoss, 
+        numpy.zeros(DTR.shape[1]), 
+        bounds = alphaBounds, 
+        factr=1.0,
+        maxfun=100000,
+        maxiter=100000)
+
+    w_hat, w, b = computePrimalFromDual(alphaStar)    
+    score = computeSVMScore(w, b)
+    print(f'Elapsed {time.time() - t} seconds')
+
+    return score
+    
+def trainNonLinearSVM(DTR, LTR, K, C, DTE, kernel, p = 0):
+    Z = LTR * 2.0 - 1.0
+    G = kernel(DTR, DTR) + K ** 2
+    H_hat = utils.mcol(Z) * utils.mrow(Z) * G
+    empP = (LTR == 1).sum()/len(LTR)
+    alphaBounds = numpy.array([(0, C)] * LTR.shape[0])
+    
+    if p != 0:
+        alphaBounds[LTR == 1] = (0, C*p/empP)
+        alphaBounds[LTR == 0] = (0, C*(1-p)/(1-empP))
+        
+    def computeDualLoss(alpha):   
+        return 0.5 * numpy.dot(numpy.dot(utils.mrow(alpha), H_hat), alpha) - alpha.sum(), numpy.dot(H_hat, alpha) - 1
+
+    def computeSVMScore(alpha):
+        score = numpy.zeros(DTE.shape[1])
+        t = time.time()
+
+        for j in range(DTE.shape[1]):
+            for i in range(DTR.shape[1]):
+                if alpha[i] > 0:
+                    score[j] += alpha[i] * Z[i] * (kernel(DTR.T[i], DTE.T[j]) + K**2)
+        print(f'Elapsed {time.time() - t} seconds')
+        print(score)
+        return score
+    
+    def computeSVMScoreFast(alpha):
+        score = numpy.zeros(DTE.shape[1])
+        t = time.time()
+
+        for j in range(DTE.shape[1]):
+            score[j] += (numpy.where(alpha > 0, 1, 0) * Z * (kernel(DTR, DTE.T[j]).sum() + DTR.shape[1]*(K**2))).sum()
+        print(f'Elapsed {time.time() - t} seconds')
+        print(score)
+        return score
+    
+    t = time.time()
+    alphaStar, x, y = scipy.optimize.fmin_l_bfgs_b(
+        computeDualLoss, 
+        numpy.zeros(DTR.shape[1]), 
+        bounds = alphaBounds, 
+        factr=1.0,
+        maxfun=100000,
+        maxiter=100000)
+    
+    score = computeSVMScore(alphaStar)
+    print(score - computeSVMScoreFast(alphaStar))
+    print(f'Elapsed {time.time() - t} seconds')
+    return score
+
+def logpdf_GMM(X, gmm):
+    S = numpy.zeros((len(gmm), X.shape[1]))
+    
+    for g in range(len(gmm)):
+        (w, mu, C) = gmm[g]
+        S[g, :] = logpdf_GAU_ND(X, mu, C) + numpy.log(w)
+        
+    logdens = scipy.special.logsumexp(S, axis=0)
+    
+    return S, logdens
+
+def GMM_EM(X, gmm, psi = 0.01, covType = 'Full'):
+    thNew = None
+    thOld = None
+    N = X.shape[1]
+    D = X.shape[0]
+    
+    while thOld == None or thNew - thOld > 1e-6:
+        thOld = thNew
+        logSj, logSjMarg = logpdf_GMM(X, gmm)
+        thNew = logSjMarg.sum()/N
+        
+        P = numpy.exp(logSj - logSjMarg)
+        
+        if covType == 'Diag':
+            newGmm = []
+            for i in range(len(gmm)):
+                gamma = P[i, :]
+                Z = gamma.sum()
+                F = (utils.mrow(gamma)*X).sum(1)
+                S = numpy.dot(X, (utils.mrow(gamma)*X).T)
+                w = Z/P.sum()
+                mu = utils.mcol(F/Z)
+                sigma = S/Z - numpy.dot(mu, mu.T)
+                sigma *= numpy.eye(sigma.shape[0])
+                U, s, _ = numpy.linalg.svd(sigma)
+                s[s<psi] = psi
+                sigma = numpy.dot(U, utils.mcol(s)*U.T)
+                newGmm.append((w, mu, sigma))
+            gmm = newGmm
+        
+        elif covType == 'Tied':
+            newGmm = []
+            sigmaTied = numpy.zeros((D, D))
+            for i in range(len(gmm)):
+                gamma = P[i, :]
+                Z = gamma.sum()
+                F = (utils.mrow(gamma)*X).sum(1)
+                S = numpy.dot(X, (utils.mrow(gamma)*X).T)
+                w = Z/P.sum()
+                mu = utils.mcol(F/Z)
+                sigma = S/Z - numpy.dot(mu, mu.T)
+                sigmaTied += Z * sigma
+                newGmm.append((w, mu))   
+            gmm = newGmm
+            sigmaTied /= N
+            U, s, _ = numpy.linalg.svd(sigmaTied)
+            s[s<psi] = psi
+            sigmaTied = numpy.dot(U, utils.mcol(s)*U.T)
+            
+            newGmm = []
+            for i in range(len(gmm)):
+                (w, mu) = gmm[i]
+                newGmm.append((w, mu, sigmaTied))
+            
+            gmm = newGmm
+            
+        elif covType == 'TiedDiag':
+            newGmm = []
+            sigmaTied = numpy.zeros((D, D))
+            for i in range(len(gmm)):
+                gamma = P[i, :]
+                Z = gamma.sum()
+                F = (utils.mrow(gamma)*X).sum(1)
+                S = numpy.dot(X, (utils.mrow(gamma)*X).T)
+                w = Z/P.sum()
+                mu = utils.mcol(F/Z)
+                sigma = S/Z - numpy.dot(mu, mu.T)
+                sigmaTied += Z * sigma
+                newGmm.append((w, mu))   
+            gmm = newGmm
+            sigmaTied /= N
+            sigmaTied *= numpy.eye(sigma.shape[0])
+            U, s, _ = numpy.linalg.svd(sigmaTied)
+            s[s<psi] = psi
+            sigmaTied = numpy.dot(U, utils.mcol(s)*U.T)
+            
+            newGmm = []
+            for i in range(len(gmm)):
+                (w, mu) = gmm[i]
+                newGmm.append((w, mu, sigmaTied))
+            
+            gmm = newGmm
+            
+        else:
+            newGmm = []
+            for i in range(len(gmm)):
+                gamma = P[i, :]
+                Z = gamma.sum()
+                F = (utils.mrow(gamma)*X).sum(1)
+                S = numpy.dot(X, (utils.mrow(gamma)*X).T)
+                w = Z/P.sum()
+                mu = utils.mcol(F/Z)
+                sigma = S/Z - numpy.dot(mu, mu.T)
+                U, s, _ = numpy.linalg.svd(sigma)
+                s[s<psi] = psi
+                sigma = numpy.dot(U, utils.mcol(s)*U.T)
+                newGmm.append((w, mu, sigma))
+            gmm = newGmm
+        
+        # print(f'LL {"Improved" if thOld == None or thNew >= thOld else "Worsened"}: {thNew}')
+    
+    return gmm
+
+def GMM_LBG(X, alpha, nComponents, psi = 0.01, covType = 'Full'):
+    gmm = [(1, utils.compute_mean(X), utils.compute_cov(X))]
+    
+    while len(gmm) <= nComponents:
+        # print(f'\nGMM has {len(gmm)} components')
+        gmm = GMM_EM(X, gmm, psi, covType)
+                
+        if len(gmm) == nComponents:
+            break
+        
+        newGmm = []
+        for i in range(len(gmm)):
+            (w, mu, sigma) = gmm[i]
+            U, s, Vh = numpy.linalg.svd(sigma)
+            d = U[:, 0:1] * s[0]**0.5 * alpha
+            newGmm.append((w/2, mu + d, sigma))
+            newGmm.append((w/2, mu - d, sigma))
+        gmm = newGmm
+            
+    return gmm
+
+def trainGMM(DTR, LTR, DTE, alpha, nComponents, psi = 0.01, covType = 'Full'):
+    DTR_0 = DTR[:, LTR == 0]
+    gmm_c0 = GMM_LBG(DTR_0, alpha, nComponents, psi, covType)
+    llr_0, _ = logpdf_GMM(DTE, gmm_c0)
+    
+    DTR_1 = DTR[:, LTR == 1]
+    gmm_c1 = GMM_LBG(DTR_1, alpha, nComponents, psi, covType)
+    llr_1, _ = logpdf_GMM(DTE, gmm_c1)
+    
+    return llr_1[0, :] - llr_0[0, :]
+

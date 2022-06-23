@@ -1,0 +1,86 @@
+Linear LR Classifiers — min DCF on the validation set using 5-fold
+Raw features — no PCA
+Priors:														0.5		0.1		0.9
+Linear LR (Prior=0.5, Lambda=1e-06):						0.116	0.216	0.544
+Linear LR (Prior=0.1, Lambda=1e-06):						0.116	0.216	0.544
+Linear LR (Prior=0.9, Lambda=1e-06):						0.116	0.216	0.544
+Raw features — PCA (m = 7)
+Priors:														0.5		0.1		0.9
+Linear LR (Prior=0.5, Lambda=1e-06):						0.116	0.215	0.55
+Linear LR (Prior=0.1, Lambda=1e-06):						0.116	0.215	0.55
+Linear LR (Prior=0.9, Lambda=1e-06):						0.116	0.215	0.55
+Raw features — PCA (m = 6)
+Priors:														0.5		0.1		0.9
+Linear LR (Prior=0.5, Lambda=1e-06):						0.13	0.246	0.59
+Linear LR (Prior=0.1, Lambda=1e-06):						0.13	0.246	0.59
+Linear LR (Prior=0.9, Lambda=1e-06):						0.13	0.246	0.59
+Raw features — PCA (m = 5)
+Priors:														0.5		0.1		0.9
+Linear LR (Prior=0.5, Lambda=1e-06):						0.136	0.239	0.602
+Linear LR (Prior=0.1, Lambda=1e-06):						0.136	0.239	0.602
+Linear LR (Prior=0.9, Lambda=1e-06):						0.136	0.239	0.602
+
+
+Gaussian features — no PCA
+Priors:							0.5		0.1		0.9
+Linear LR (Prior=0.5, Lambda=1e-06):						0.127	0.226	0.52
+Linear LR (Prior=0.1, Lambda=1e-06):						0.127	0.226	0.52
+Linear LR (Prior=0.9, Lambda=1e-06):						0.127	0.226	0.52
+Gaussian features — PCA (m = 7)
+Priors:							0.5		0.1		0.9
+Linear LR (Prior=0.5, Lambda=1e-06):						0.127	0.23	0.517
+Linear LR (Prior=0.1, Lambda=1e-06):						0.127	0.23	0.517
+Linear LR (Prior=0.9, Lambda=1e-06):						0.127	0.23	0.517
+Gaussian features — PCA (m = 6)
+Priors:							0.5		0.1		0.9
+Linear LR (Prior=0.5, Lambda=1e-06):						0.129	0.227	0.539
+Linear LR (Prior=0.1, Lambda=1e-06):						0.129	0.227	0.539
+Linear LR (Prior=0.9, Lambda=1e-06):						0.129	0.227	0.539
+Gaussian features — PCA (m = 5)
+Priors:							0.5		0.1		0.9
+Linear LR (Prior=0.5, Lambda=1e-06):						0.129	0.226	0.535
+Linear LR (Prior=0.1, Lambda=1e-06):						0.129	0.226	0.535
+Linear LR (Prior=0.9, Lambda=1e-06):						0.129	0.226	0.535
+Linear LR Classifiers — min DCF on the validation set using 5-fold
+Raw features — no PCA
+Priors:														0.5		0.1		0.9
+Linear LR (Prior=0.5, Lambda=1e-05):						0.115	0.216	0.546
+Linear LR (Prior=0.1, Lambda=1e-05):						0.115	0.216	0.546
+Linear LR (Prior=0.9, Lambda=1e-05):						0.115	0.216	0.546
+Raw features — PCA (m = 7)
+Priors:														0.5		0.1		0.9
+Linear LR (Prior=0.5, Lambda=1e-05):						0.116	0.216	0.551
+Linear LR (Prior=0.1, Lambda=1e-05):						0.116	0.216	0.551
+Linear LR (Prior=0.9, Lambda=1e-05):						0.116	0.216	0.551
+Raw features — PCA (m = 6)
+Priors:														0.5		0.1		0.9
+Linear LR (Prior=0.5, Lambda=1e-05):						0.13	0.246	0.589
+Linear LR (Prior=0.1, Lambda=1e-05):						0.13	0.246	0.589
+Linear LR (Prior=0.9, Lambda=1e-05):						0.13	0.246	0.589
+Raw features — PCA (m = 5)
+Priors:														0.5		0.1		0.9
+Linear LR (Prior=0.5, Lambda=1e-05):						0.136	0.239	0.6
+Linear LR (Prior=0.1, Lambda=1e-05):						0.136	0.239	0.6
+Linear LR (Prior=0.9, Lambda=1e-05):						0.136	0.239	0.6
+
+
+Gaussian features — no PCA
+Priors:							0.5		0.1		0.9
+Linear LR (Prior=0.5, Lambda=1e-05):						0.127	0.227	0.521
+Linear LR (Prior=0.1, Lambda=1e-05):						0.127	0.227	0.521
+Linear LR (Prior=0.9, Lambda=1e-05):						0.127	0.227	0.521
+Gaussian features — PCA (m = 7)
+Priors:							0.5		0.1		0.9
+Linear LR (Prior=0.5, Lambda=1e-05):						0.127	0.23	0.518
+Linear LR (Prior=0.1, Lambda=1e-05):						0.127	0.23	0.518
+Linear LR (Prior=0.9, Lambda=1e-05):						0.127	0.23	0.518
+Gaussian features — PCA (m = 6)
+Priors:							0.5		0.1		0.9
+Linear LR (Prior=0.5, Lambda=1e-05):						0.129	0.227	0.54
+Linear LR (Prior=0.1, Lambda=1e-05):						0.129	0.227	0.54
+Linear LR (Prior=0.9, Lambda=1e-05):						0.129	0.227	0.54
+Gaussian features — PCA (m = 5)
+Priors:							0.5		0.1		0.9
+Linear LR (Prior=0.5, Lambda=1e-05):						0.129	0.226	0.534
+Linear LR (Prior=0.1, Lambda=1e-05):						0.129	0.226	0.534
+Linear LR (Prior=0.9, Lambda=1e-05):						0.129	0.226	0.534

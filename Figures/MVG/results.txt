@@ -1,0 +1,53 @@
+MVG Classifiers — min DCF on the validation set using 5-fold
+
+
+Raw features — no PCA
+Priors:							0.5		0.1		0.9
+MVG Full:						0.143	0.289	0.659
+MVG Diag:						0.192	0.316	0.734
+MVG Tied:						0.112	0.225	0.569
+MVG Tied Diag:					0.16	0.266	0.58
+Raw features — PCA (m = 7)
+Priors:							0.5		0.1		0.9
+MVG Full:						0.139	0.307	0.625
+MVG Diag:						0.214	0.509	0.718
+MVG Tied:						0.112	0.224	0.565
+MVG Tied Diag:					0.139	0.273	0.594
+Raw features — PCA (m = 6)
+Priors:							0.5		0.1		0.9
+MVG Full:						0.152	0.292	0.635
+MVG Diag:						0.222	0.534	0.727
+MVG Tied:						0.138	0.255	0.573
+MVG Tied Diag:					0.163	0.302	0.597
+Raw features — PCA (m = 5)
+Priors:							0.5		0.1		0.9
+MVG Full:						0.15	0.254	0.647
+MVG Diag:						0.22	0.459	0.749
+MVG Tied:						0.149	0.263	0.569
+MVG Tied Diag:					0.17	0.313	0.586
+
+
+Gaussianized features — no PCA
+Priors:							0.5		0.1		0.9
+MVG Full:						0.154	0.242	0.696
+MVG Diag:						0.154	0.279	0.603
+MVG Tied:						0.133	0.234	0.534
+MVG Tied Diag:					0.163	0.295	0.607
+Gaussianized features — PCA (m = 7)
+Priors:							0.5		0.1		0.9
+MVG Full:						0.153	0.243	0.697
+MVG Diag:						0.167	0.248	0.659
+MVG Tied:						0.135	0.241	0.546
+MVG Tied Diag:					0.137	0.256	0.568
+Gaussianized features — PCA (m = 6)
+Priors:							0.5		0.1		0.9
+MVG Full:						0.155	0.242	0.687
+MVG Diag:						0.159	0.241	0.64
+MVG Tied:						0.137	0.247	0.541
+MVG Tied Diag:					0.142	0.259	0.589
+Gaussianized features — PCA (m = 5)
+Priors:							0.5		0.1		0.9
+MVG Full:						0.151	0.249	0.691
+MVG Diag:						0.157	0.246	0.642
+MVG Tied:						0.137	0.248	0.534
+MVG Tied Diag:					0.143	0.257	0.591

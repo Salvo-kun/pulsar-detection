@@ -7,6 +7,67 @@ Created on Mon Jun 20 19:36:28 2022
 
 import numpy
 import scipy.stats
+import matplotlib.pyplot as plt
+
+def heatmap(data, row_labels, col_labels, ax=None,
+            cbar_kw={}, cbarlabel="", **kwargs):
+    """
+    Create a heatmap from a numpy array and two lists of labels.
+
+    Parameters
+    ----------
+    data
+        A 2D numpy array of shape (M, N).
+    row_labels
+        A list or array of length M with the labels for the rows.
+    col_labels
+        A list or array of length N with the labels for the columns.
+    ax
+        A `matplotlib.axes.Axes` instance to which the heatmap is plotted.  If
+        not provided, use current axes or create a new one.  Optional.
+    cbar_kw
+        A dictionary with arguments to `matplotlib.Figure.colorbar`.  Optional.
+    cbarlabel
+        The label for the colorbar.  Optional.
+    **kwargs
+        All other arguments are forwarded to `imshow`.
+    """
+
+    if not ax:
+        ax = plt.gca()
+
+    # Plot the heatmap
+    im = ax.imshow(data, **kwargs)
+
+    # Create colorbar
+    cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
+    cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom")
+
+    # Show all ticks and label them with the respective list entries.
+    ax.set_xticks(numpy.arange(data.shape[1]), labels=col_labels)
+    ax.set_yticks(numpy.arange(data.shape[0]), labels=row_labels)
+
+    # Let the horizontal axes labeling appear on top.
+    ax.tick_params(top=True, bottom=False,
+                   labeltop=True, labelbottom=False)
+
+    # Rotate the tick labels and set their alignment.
+    plt.setp(ax.get_xticklabels(), rotation=-30, ha="right",
+             rotation_mode="anchor")
+
+    # Turn spines off and create white grid.
+    ax.spines[:].set_visible(False)
+
+    ax.set_xticks(numpy.arange(data.shape[1]+1)-.5, minor=True)
+    ax.set_yticks(numpy.arange(data.shape[0]+1)-.5, minor=True)
+    ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
+    ax.tick_params(which="minor", bottom=False, left=False)
+
+    return im, cbar
+
+def multiplePrint(text, file):
+    print(text)
+    file.write(f'{text}\n')
 
 def mcol(v):
     return v.reshape((v.size, 1))
@@ -30,6 +91,19 @@ def z_normalize(DTR, DTE):
     return scipy.stats.zscore(DTR, axis=1), scipy.stats.zscore(DTE, axis=1)
 
 def gaussianize(DTR, DTE):
+    rankTR = numpy.ones(DTR.shape)
+    for i in range(DTR.shape[1]):
+        rankTR[:, i] += (DTR < mcol(DTR[:, i])).sum(axis = 1)
+    rankTR /= DTR.shape[1] + 2
+    
+    rankTE = numpy.ones(DTE.shape)
+    for i in range(DTE.shape[1]):
+        rankTE[:, i] += (DTR < mcol(DTE[:, i])).sum(axis = 1)
+    rankTE /= DTR.shape[1] + 2
+        
+    return scipy.stats.norm.ppf(rankTR), scipy.stats.norm.ppf(rankTE)
+
+def wrong_gaussianize(DTR, DTE):
     rankTR = numpy.zeros(DTR.shape)
     for i in range(DTR.shape[0]):
         for j in range(DTR.shape[1]):
@@ -48,25 +122,20 @@ def pearsonCorrelation(DTR):
     pearsonCorrelationMatrix = numpy.zeros((DTR.shape[0], DTR.shape[0]))
     for i in range(DTR.shape[0]):
         for j in range(DTR.shape[0]):
-            pearsonCorrelationMatrix[i][j] += abs(compute_cov(DTR[i], DTR[j])/(compute_cov(DTR[i]) ** 0.5 * compute_cov(DTR[j]) ** 0.5))
+            pearsonCorrelationMatrix[i][j] += compute_cov(DTR[i], DTR[j])/(compute_cov(DTR[i]) ** 0.5 * compute_cov(DTR[j]) ** 0.5)
         
     return pearsonCorrelationMatrix
 
-def compute_PCA(C, D, L, m):    
-    s, U = numpy.linalg.eigh(C)
-    P = U[:, ::-1][:, 0:m]
-    DP = numpy.dot(P.T, D)
-    
-    return DP
-
-def apply_PCA(D, L, m):
+def compute_PCA(D, dims):
     DC = center_data(D)
     C = (numpy.dot(DC, DC.T))/D.shape[1]
-    return compute_PCA(C, D, L, m)
+    s, U = numpy.linalg.eigh(C)
+    return U[:, ::-1][:, 0:dims], s[::-1], DC
 
 def K_folds_split(dataset, labels, folds=3):
     dataset_split = []
     fold_size = int(dataset.shape[1] / folds)
+    numpy.random.seed(0)
     idxs = numpy.random.permutation(dataset.shape[1])
     for i in range(folds):
         if idxs.shape[0] < 2*fold_size:
