@@ -1,0 +1,57 @@
+RBF SVM Classifiers — min DCF on the validation set using 3-fold
+Raw features — no PCA
+RBF SVM Classifiers — min DCF on the validation set using 3-fold
+Raw features — no PCA
+RBF SVM Classifiers — min DCF on the validation set using 3-fold
+Raw features — no PCA
+RBF SVM Classifiers — min DCF on the validation set using 3-fold
+Raw features — no PCA
+RBF SVM Classifiers — min DCF on the validation set using 3-fold
+Raw features — no PCA
+RBF SVM Classifiers — min DCF on the validation set using 3-fold
+Raw features — no PCA
+Priors:														0.5		0.1		0.9
+RBF SVM (C = 0.01):						0.133	0.302	0.708
+RBF SVM Balanced (Prior= 0.5, C = 0.01):						0.135	0.325	0.71
+
+
+Raw features — PCA (m = 7)
+Priors:														0.5		0.1		0.9
+RBF SVM (C = 0.01):						0.134	0.308	0.724
+RBF SVM Balanced (Prior= 0.5, C = 0.01):						0.135	0.327	0.729
+
+
+RBF SVM Classifiers — min DCF on the validation set using 3-fold
+Raw features — no PCA
+Priors:														0.5		0.1		0.9
+RBF SVM (C = 0.01):						0.159	0.305	0.66
+RBF SVM Balanced (Prior= 0.5, C = 0.01):						0.135	0.325	0.71
+
+
+Raw features — PCA (m = 7)
+Priors:														0.5		0.1		0.9
+RBF SVM (C = 0.01):						0.16	0.308	0.669
+RBF SVM Balanced (Prior= 0.5, C = 0.01):						0.135	0.327	0.729
+
+
+RBF SVM Classifiers — min DCF on the validation set using 3-fold
+Raw features — no PCA
+Priors:														0.5		0.1		0.9
+RBF SVM (C = 1):						0.119	0.214	0.784
+RBF SVM Balanced (Prior= 0.5, C = 1):						0.641	0.916	0.979
+
+
+Raw features — PCA (m = 7)
+Priors:														0.5		0.1		0.9
+RBF SVM (C = 1):						0.12	0.216	0.778
+RBF SVM Balanced (Prior= 0.5, C = 1):						0.648	0.929	0.978
+
+
+RBF SVM Classifiers — min DCF on the validation set using 3-fold
+Raw features — no PCA
+Priors:														0.5		0.1		0.9
+RBF SVM (C = 0.5):						0.12	0.223	0.776
+RBF SVM Balanced (Prior= 0.5, C = 0.5):						0.114	0.222	0.547
+
+
+Raw features — PCA (m = 7)

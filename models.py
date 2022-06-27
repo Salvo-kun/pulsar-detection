@@ -101,60 +101,69 @@ def logreg_obj_wrap(DTR, LTR, l):
         return reg + avg_risk
     return logreg_obj
 
-def compute_linear_LR(DTR, LTR, DTE, l, p):
+def compute_linear_LR(DTR, LTR, DTE, l, p = None):
     logreg_obj = logreg_obj_wrap(DTR, LTR, l)
     t = time.time()
     x, f, d = scipy.optimize.fmin_l_bfgs_b(logreg_obj, numpy.zeros(DTR.shape[0] + 1), approx_grad = True, factr=1.0)
     print(f'Elapsed {time.time() - t} seconds')
+    print(x)
     w, b = utils.mcol(x[0:-1]), x[-1]
-    scores = numpy.dot(w.T, DTE) + b - numpy.log(p/(1-p))
+    calibration = 0 if p == None else numpy.log(p/(1-p))
+    scores = numpy.dot(w.T, DTE) + b - calibration
     
     return scores[0, :]
 
-# def logreg_quad_obj_wrap(DTR, LTR, l):
-#     z = LTR * 2.0 - 1.0
-#     def logreg_quad_obj(v):
-#         A, b, c = v[0:DTR.shape[0]**2].reshape((DTR.shape[0], DTR.shape[0])), utils.mcol(v[0:DTR.shape[0]]), v[-1]
-#         w = numpy.vstack([utils.mcol(A), b])
-#         reg = 0.5 * l * numpy.linalg.norm(w) ** 2
-#         s = numpy.dot(DTR.T, numpy.dot(A, DTR)) + numpy.dot(b.T, DTR) + c
-#         avg_risk = (numpy.logaddexp(0, -s*z)).mean()
-#         return reg + avg_risk
-#     return logreg_quad_obj
+def logreg_obj_wrap_priorW(DTR, LTR, l, p):
+    z = LTR * 2.0 - 1.0
+    def logreg_obj(v):
+        w, b = utils.mcol(v[0:-1]), v[-1]
+        reg = 0.5 * l * numpy.linalg.norm(w) ** 2
+        s = (numpy.dot(w.T, DTR) + b).ravel()
+        avg_risk_0 = (numpy.logaddexp(0, -s[LTR == 0]*z[LTR == 0])).mean()*(1-p)
+        avg_risk_1 = (numpy.logaddexp(0, -s[LTR == 1]*z[LTR == 1])).mean()*p
+        return reg + avg_risk_1 + avg_risk_0
+    return logreg_obj
 
-# def compute_quadratic_LR(DTR, LTR, DTE, l, p):
-#     logreg_quad_obj = logreg_quad_obj_wrap(DTR, LTR, l)
-#     t = time.time()
-#     x, f, d = scipy.optimize.fmin_l_bfgs_b(logreg_quad_obj, numpy.zeros(DTR.shape[0]*(DTR.shape[0] + 1) + 1), approx_grad = True, factr=1.0)
-#     print(f'Elapsed {time.time() - t} seconds')
-#     A, b, c = x[0:DTR.shape[0]**2].reshape((DTR.shape[0], DTR.shape[0])), utils.mcol(x[0:DTR.shape[0]]), x[-1]
-#     scores = numpy.dot(DTE.T, numpy.dot(A, DTE)) + numpy.dot(b.T, DTE) + c - numpy.log(p/(1-p))
-#     return scores[0, :]
+def compute_linear_LR_priorW(DTR, LTR, DTE, l, p = 0.5):
+    logreg_obj = logreg_obj_wrap_priorW(DTR, LTR, l, p)
+    t = time.time()
+    x, f, d = scipy.optimize.fmin_l_bfgs_b(logreg_obj, numpy.zeros(DTR.shape[0] + 1), approx_grad = True, factr=1.0)
+    print(f'Elapsed {time.time() - t} seconds')
+    print(x)
+    w, b = utils.mcol(x[0:-1]), x[-1]
+    calibration = 0 if p == None else numpy.log(p/(1-p))
+    scores = numpy.dot(w.T, DTE) + b - calibration
+    
+    return scores[0, :]
 
 def expandFeatures(x):
     x = utils.mcol(x)
     expX = utils.mcol(numpy.dot(x, x.T))
     return numpy.vstack([expX, x])
 
-def logreg_quad_obj_wrap(DTR, LTR, l):
-    z = LTR * 2.0 - 1.0
-    def logreg_quad_obj(v):
-        w, b = utils.mcol(v[0:-1]), v[-1]
-        reg = 0.5 * l * numpy.linalg.norm(w) ** 2
-        s = numpy.dot(w.T, DTR) + b 
-        avg_risk = (numpy.logaddexp(0, -s*z)).mean()
-        return reg + avg_risk
-    return logreg_quad_obj
-
-def compute_quadratic_LR(DTR, LTR, DTE, l, p):
+def compute_quadratic_LR(DTR, LTR, DTE, l, p = None):
     DTR_ext = numpy.hstack([expandFeatures(DTR[:, i]) for i in range(DTR.shape[1])])
     DTE_ext = numpy.hstack([expandFeatures(DTE[:, i]) for i in range(DTE.shape[1])])
-    logreg_quad_obj = logreg_quad_obj_wrap(DTR_ext, LTR, l)
+    logreg_quad_obj = logreg_obj_wrap(DTR_ext, LTR, l)
     t = time.time()
     x, f, d = scipy.optimize.fmin_l_bfgs_b(logreg_quad_obj, numpy.zeros(DTR_ext.shape[0] + 1), approx_grad = True, factr=1.0)
     print(f'Elapsed {time.time() - t} seconds')
     w, b = utils.mcol(x[0:-1]), x[-1]
-    scores = numpy.dot(w.T, DTE_ext) + b - numpy.log(p/(1-p))
+    calibration = 0 if p == None else numpy.log(p/(1-p))
+    scores = numpy.dot(w.T, DTE_ext) + b - calibration
+    
+    return scores[0, :]
+
+def compute_quadratic_LR_priorW(DTR, LTR, DTE, l, p = 0.5):
+    DTR_ext = numpy.hstack([expandFeatures(DTR[:, i]) for i in range(DTR.shape[1])])
+    DTE_ext = numpy.hstack([expandFeatures(DTE[:, i]) for i in range(DTE.shape[1])])
+    logreg_quad_obj = logreg_obj_wrap_priorW(DTR_ext, LTR, l, p)
+    t = time.time()
+    x, f, d = scipy.optimize.fmin_l_bfgs_b(logreg_quad_obj, numpy.zeros(DTR_ext.shape[0] + 1), approx_grad = True, factr=1.0)
+    print(f'Elapsed {time.time() - t} seconds')
+    w, b = utils.mcol(x[0:-1]), x[-1]
+    calibration = 0 if p == None else numpy.log(p/(1-p))
+    scores = numpy.dot(w.T, DTE_ext) + b - calibration
     
     return scores[0, :]
 
@@ -208,30 +217,31 @@ def trainNonLinearSVM(DTR, LTR, K, C, DTE, kernel, p = 0):
         alphaBounds[LTR == 1] = (0, C*p/empP)
         alphaBounds[LTR == 0] = (0, C*(1-p)/(1-empP))
         
-    def computeDualLoss(alpha):   
+    def computeDualLoss(alpha):
         return 0.5 * numpy.dot(numpy.dot(utils.mrow(alpha), H_hat), alpha) - alpha.sum(), numpy.dot(H_hat, alpha) - 1
 
     def computeSVMScore(alpha):
         score = numpy.zeros(DTE.shape[1])
-        t = time.time()
+        # t = time.time()
 
         for j in range(DTE.shape[1]):
+            # print(f'{j} - Elapsed {time.time() - t} seconds')
             for i in range(DTR.shape[1]):
                 if alpha[i] > 0:
-                    score[j] += alpha[i] * Z[i] * (kernel(DTR.T[i], DTE.T[j]) + K**2)
-        print(f'Elapsed {time.time() - t} seconds')
-        print(score)
+                    score[j] += alpha[i] * Z[i] * (kernel(DTR[:, i], DTE[:, j]) + K**2)
+        # print(f'Elapsed {time.time() - t} seconds')
+        # print(score)
         return score
     
-    def computeSVMScoreFast(alpha):
-        score = numpy.zeros(DTE.shape[1])
-        t = time.time()
+    # def computeSVMScoreFast(alpha):
+    #     score = numpy.zeros(DTE.shape[1])
+    #     t = time.time()
 
-        for j in range(DTE.shape[1]):
-            score[j] += (numpy.where(alpha > 0, 1, 0) * Z * (kernel(DTR, DTE.T[j]).sum() + DTR.shape[1]*(K**2))).sum()
-        print(f'Elapsed {time.time() - t} seconds')
-        print(score)
-        return score
+    #     for j in range(DTE.shape[1]):
+    #         print(f'{j} - Elapsed {time.time() - t} seconds')
+    #         score[j] += (numpy.where(alpha > 0, alpha, 0) * Z * (kernel(DTR, DTE[:, j]) + (K**2))).sum()
+    #     print(score)
+    #     return score
     
     t = time.time()
     alphaStar, x, y = scipy.optimize.fmin_l_bfgs_b(
@@ -242,8 +252,9 @@ def trainNonLinearSVM(DTR, LTR, K, C, DTE, kernel, p = 0):
         maxfun=100000,
         maxiter=100000)
     
+    # score = computeSVMScoreFast(alphaStar)
     score = computeSVMScore(alphaStar)
-    print(score - computeSVMScoreFast(alphaStar))
+    # print(score - computeSVMScoreFast(alphaStar))
     print(f'Elapsed {time.time() - t} seconds')
     return score
 
@@ -278,7 +289,7 @@ def GMM_EM(X, gmm, psi = 0.01, covType = 'Full'):
                 Z = gamma.sum()
                 F = (utils.mrow(gamma)*X).sum(1)
                 S = numpy.dot(X, (utils.mrow(gamma)*X).T)
-                w = Z/P.sum()
+                w = Z/N
                 mu = utils.mcol(F/Z)
                 sigma = S/Z - numpy.dot(mu, mu.T)
                 sigma *= numpy.eye(sigma.shape[0])
@@ -296,7 +307,7 @@ def GMM_EM(X, gmm, psi = 0.01, covType = 'Full'):
                 Z = gamma.sum()
                 F = (utils.mrow(gamma)*X).sum(1)
                 S = numpy.dot(X, (utils.mrow(gamma)*X).T)
-                w = Z/P.sum()
+                w = Z/N
                 mu = utils.mcol(F/Z)
                 sigma = S/Z - numpy.dot(mu, mu.T)
                 sigmaTied += Z * sigma
@@ -322,7 +333,7 @@ def GMM_EM(X, gmm, psi = 0.01, covType = 'Full'):
                 Z = gamma.sum()
                 F = (utils.mrow(gamma)*X).sum(1)
                 S = numpy.dot(X, (utils.mrow(gamma)*X).T)
-                w = Z/P.sum()
+                w = Z/N
                 mu = utils.mcol(F/Z)
                 sigma = S/Z - numpy.dot(mu, mu.T)
                 sigmaTied += Z * sigma
@@ -348,7 +359,7 @@ def GMM_EM(X, gmm, psi = 0.01, covType = 'Full'):
                 Z = gamma.sum()
                 F = (utils.mrow(gamma)*X).sum(1)
                 S = numpy.dot(X, (utils.mrow(gamma)*X).T)
-                w = Z/P.sum()
+                w = Z/N
                 mu = utils.mcol(F/Z)
                 sigma = S/Z - numpy.dot(mu, mu.T)
                 U, s, _ = numpy.linalg.svd(sigma)
@@ -385,11 +396,12 @@ def GMM_LBG(X, alpha, nComponents, psi = 0.01, covType = 'Full'):
 def trainGMM(DTR, LTR, DTE, alpha, nComponents, psi = 0.01, covType = 'Full'):
     DTR_0 = DTR[:, LTR == 0]
     gmm_c0 = GMM_LBG(DTR_0, alpha, nComponents, psi, covType)
-    llr_0, _ = logpdf_GMM(DTE, gmm_c0)
+    _, llr_0 = logpdf_GMM(DTE, gmm_c0)
     
     DTR_1 = DTR[:, LTR == 1]
     gmm_c1 = GMM_LBG(DTR_1, alpha, nComponents, psi, covType)
-    llr_1, _ = logpdf_GMM(DTE, gmm_c1)
-    
-    return llr_1[0, :] - llr_0[0, :]
+    _, llr_1 = logpdf_GMM(DTE, gmm_c1)
 
+    
+    return llr_1 - llr_0
+    

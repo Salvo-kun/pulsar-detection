@@ -1,50 +1,13 @@
-Quadratic LR Classifiers — min DCF on the validation set using 5-fold
+Quadratic LR Classifiers — min DCF on the validation set using 3-fold
 Raw features — no PCA
 Priors:							0.5		0.1		0.9
-Quadratic LR (Prior=0.5, Lambda=1e-06):						0.113	0.206	0.509
+Quadratic LR (Prior=0.5, Lambda=1e-05):						0.118	0.218	0.501
 Raw features — PCA (m = 7)
 Priors:							0.5		0.1		0.9
-Quadratic LR (Prior=0.5, Lambda=1e-06):						0.115	0.204	0.512
+Quadratic LR (Prior=0.5, Lambda=1e-05):						0.115	0.218	0.5
 Raw features — PCA (m = 6)
 Priors:							0.5		0.1		0.9
-Quadratic LR (Prior=0.5, Lambda=1e-06):						0.115	0.211	0.513
+Quadratic LR (Prior=0.5, Lambda=1e-05):						0.114	0.218	0.511
 Raw features — PCA (m = 5)
 Priors:							0.5		0.1		0.9
-Quadratic LR (Prior=0.5, Lambda=1e-06):						0.114	0.211	0.54
-Gaussian features — no PCA
-Priors:							0.5		0.1		0.9
-Quadratic LR (Prior=0.5, Lambda=1e-06):						0.131	0.215	0.542
-Gaussian features — PCA (m = 7)
-Priors:							0.5		0.1		0.9
-Quadratic LR (Prior=0.5, Lambda=1e-06):						0.129	0.212	0.543
-Gaussian features — PCA (m = 6)
-Priors:							0.5		0.1		0.9
-Quadratic LR (Prior=0.5, Lambda=1e-06):						0.129	0.213	0.554
-Gaussian features — PCA (m = 5)
-Priors:							0.5		0.1		0.9
-Quadratic LR (Prior=0.5, Lambda=1e-06):						0.127	0.212	0.562
-Quadratic LR Classifiers — min DCF on the validation set using 5-fold
-Raw features — no PCA
-Priors:							0.5		0.1		0.9
-Quadratic LR (Prior=0.5, Lambda=1e-05):						0.114	0.206	0.505
-Raw features — PCA (m = 7)
-Priors:							0.5		0.1		0.9
-Quadratic LR (Prior=0.5, Lambda=1e-05):						0.115	0.203	0.509
-Raw features — PCA (m = 6)
-Priors:							0.5		0.1		0.9
-Quadratic LR (Prior=0.5, Lambda=1e-05):						0.115	0.208	0.515
-Raw features — PCA (m = 5)
-Priors:							0.5		0.1		0.9
-Quadratic LR (Prior=0.5, Lambda=1e-05):						0.113	0.214	0.538
-Gaussian features — no PCA
-Priors:							0.5		0.1		0.9
-Quadratic LR (Prior=0.5, Lambda=1e-05):						0.129	0.215	0.537
-Gaussian features — PCA (m = 7)
-Priors:							0.5		0.1		0.9
-Quadratic LR (Prior=0.5, Lambda=1e-05):						0.128	0.212	0.533
-Gaussian features — PCA (m = 6)
-Priors:							0.5		0.1		0.9
-Quadratic LR (Prior=0.5, Lambda=1e-05):						0.129	0.213	0.554
-Gaussian features — PCA (m = 5)
-Priors:							0.5		0.1		0.9
-Quadratic LR (Prior=0.5, Lambda=1e-05):						0.127	0.212	0.563
+Quadratic LR (Prior=0.5, Lambda=1e-05):						0.112	0.218	0.544

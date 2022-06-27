@@ -1,0 +1,66 @@
+MVG Tied Raw features PCA = 7
+Priors:														0.5				0.1				0.9
+MVG Tied:						0.109 0.19 0.111	0.206 0.269 0.218	0.587 1.229 0.603
+Quadratic LR Raw Features PCA = 7
+Priors:														0.5				0.1				0.9
+Quadratic LR (Prior=0.5, Lambda=1e-05):						0.1 0.151 0.103	0.2 0.283 0.216	0.465 0.667 0.512
+GMM Full Cov Raw Features no PCA
+Priors:														0.5				0.1				0.9
+GMM Full Cov 8 components:						0.109 0.111 0.113	0.223 0.233 0.242	0.563 0.657 0.583
+MVG Tied Raw features PCA = 7
+Priors:														0.5				0.1				0.9
+MVG Tied:						0.109 0.19 0.111	0.206 0.269 0.218	0.587 1.229 0.603
+Quadratic LR Raw Features PCA = 7
+Priors:														0.5				0.1				0.9
+Quadratic LR (Prior=0.5, Lambda=1e-05):						0.1 0.151 0.103	0.2 0.283 0.216	0.465 0.667 0.512
+GMM Full Cov Raw Features no PCA
+Priors:														0.5				0.1				0.9
+GMM Full Cov 8 components:						0.109 0.111 0.113	0.223 0.233 0.242	0.563 0.657 0.583
+MVG Tied Raw features PCA = 7
+Priors:														0.5				0.1				0.9
+MVG Tied:						0.109 0.19 0.111	0.206 0.269 0.218	0.587 1.229 0.603
+Quadratic LR Raw Features PCA = 7
+Priors:														0.5				0.1				0.9
+Quadratic LR (Prior=0.5, Lambda=1e-05):						0.1 0.151 0.103	0.2 0.283 0.216	0.465 0.667 0.512
+GMM Full Cov Raw Features no PCA
+Priors:														0.5				0.1				0.9
+GMM Full Cov 8 components:						0.109 0.111 0.113	0.223 0.233 0.242	0.563 0.657 0.583
+MVG Tied Raw features PCA = 7
+Priors:														0.5				0.1				0.9
+MVG Tied:						0.109 0.19 0.111	0.206 0.269 0.218	0.587 1.229 0.603
+Quadratic LR Raw Features PCA = 7
+Priors:														0.5				0.1				0.9
+Quadratic LR (Prior=0.5, Lambda=1e-05):						0.1 0.151 0.103	0.2 0.283 0.216	0.465 0.667 0.512
+Quadratic SVM Raw Features PCA = 7
+Priors:														0.5				0.1				0.9
+Quadratic SVM Balanced (Prior= 0.5, C = 0.01):						0.104 0.113 0.108	0.203 0.302 0.21	0.47 0.979 0.491
+GMM Full Cov Raw Features no PCA
+Priors:														0.5				0.1				0.9
+GMM Full Cov 8 components:						0.109 0.111 0.113	0.223 0.233 0.242	0.563 0.657 0.583
+MVG Tied Raw features PCA = 7
+Priors:														0.5				0.1				0.9
+MVG Tied:						0.109 0.19 0.111	0.206 0.269 0.218	0.587 1.229 0.603
+Quadratic LR Raw Features PCA = 7
+Priors:														0.5				0.1				0.9
+Quadratic LR (Prior=0.5, Lambda=1e-05):						0.104 0.108 0.106	0.203 0.206 0.208	0.449 0.463 0.46
+Quadratic SVM Raw Features PCA = 7
+Priors:														0.5				0.1				0.9
+Quadratic SVM Balanced (Prior= 0.5, C = 0.01):						0.104 0.113 0.108	0.203 0.302 0.21	0.47 0.979 0.491
+GMM Full Cov Raw Features no PCA
+Priors:														0.5				0.1				0.9
+GMM Full Cov 8 components:						0.109 0.111 0.113	0.223 0.233 0.242	0.563 0.657 0.583
+MVG Tied Raw features PCA = 7
+Priors:														0.5				0.1				0.9
+MVG Tied:						0.109 0.19 0.11	0.206 0.269 0.216	0.587 1.229 0.604
+MVG Tied Raw features PCA = 7
+Priors:														0.5				0.1				0.9
+MVG Tied:						0.109 0.19 0.11	0.206 0.269 0.216	0.587 1.229 0.604
+Quadratic LR Raw Features PCA = 7
+Priors:														0.5				0.1				0.9
+Quadratic LR (Prior=0.5, Lambda=1e-05):						0.104 0.108 0.108	0.203 0.206 0.206	0.449 0.463 0.453
+Quadratic SVM Raw Features PCA = 7
+Priors:														0.5				0.1				0.9
+Quadratic SVM Balanced (Prior= 0.5, C = 0.01):						0.104 0.113 0.106	0.203 0.302 0.21	0.47 0.979 0.498
+GMM Full Cov Raw Features no PCA
+Priors:														0.5				0.1				0.9
+GMM Full Cov 8 components:						0.109 0.111 0.11	0.223 0.233 0.229	0.563 0.657 0.617

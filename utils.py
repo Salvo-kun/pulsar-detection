@@ -8,6 +8,7 @@ Created on Mon Jun 20 19:36:28 2022
 import numpy
 import scipy.stats
 import matplotlib.pyplot as plt
+import matplotlib
 
 def heatmap(data, row_labels, col_labels, ax=None,
             cbar_kw={}, cbarlabel="", **kwargs):
@@ -101,21 +102,6 @@ def gaussianize(DTR, DTE):
         rankTE[:, i] += (DTR < mcol(DTE[:, i])).sum(axis = 1)
     rankTE /= DTR.shape[1] + 2
         
-    return scipy.stats.norm.ppf(rankTR), scipy.stats.norm.ppf(rankTE)
-
-def wrong_gaussianize(DTR, DTE):
-    rankTR = numpy.zeros(DTR.shape)
-    for i in range(DTR.shape[0]):
-        for j in range(DTR.shape[1]):
-            rankTR[i][j] += (DTR[i] < DTR[i][j]).sum() + 1
-    rankTR /= DTR.shape[1] + 2
-    
-    rankTE = numpy.zeros(DTR.shape)
-    for i in range(DTR.shape[0]):
-        for j in range(DTR.shape[1]):
-            rankTE[i][j] += (DTR[i] < DTE[i][j]).sum() + 1
-    rankTE /= DTR.shape[1] + 2
-    
     return scipy.stats.norm.ppf(rankTR), scipy.stats.norm.ppf(rankTE)
 
 def pearsonCorrelation(DTR):
