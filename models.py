@@ -105,8 +105,8 @@ def compute_linear_LR(DTR, LTR, DTE, l, p = None):
     logreg_obj = logreg_obj_wrap(DTR, LTR, l)
     t = time.time()
     x, f, d = scipy.optimize.fmin_l_bfgs_b(logreg_obj, numpy.zeros(DTR.shape[0] + 1), approx_grad = True, factr=1.0)
-    print(f'Elapsed {time.time() - t} seconds')
-    print(x)
+    # print(f'Elapsed {time.time() - t} seconds')
+    # print(x)
     w, b = utils.mcol(x[0:-1]), x[-1]
     calibration = 0 if p == None else numpy.log(p/(1-p))
     scores = numpy.dot(w.T, DTE) + b - calibration
@@ -128,8 +128,8 @@ def compute_linear_LR_priorW(DTR, LTR, DTE, l, p = 0.5):
     logreg_obj = logreg_obj_wrap_priorW(DTR, LTR, l, p)
     t = time.time()
     x, f, d = scipy.optimize.fmin_l_bfgs_b(logreg_obj, numpy.zeros(DTR.shape[0] + 1), approx_grad = True, factr=1.0)
-    print(f'Elapsed {time.time() - t} seconds')
-    print(x)
+    # print(f'Elapsed {time.time() - t} seconds')
+    # print(x)
     w, b = utils.mcol(x[0:-1]), x[-1]
     calibration = 0 if p == None else numpy.log(p/(1-p))
     scores = numpy.dot(w.T, DTE) + b - calibration
@@ -147,7 +147,7 @@ def compute_quadratic_LR(DTR, LTR, DTE, l, p = None):
     logreg_quad_obj = logreg_obj_wrap(DTR_ext, LTR, l)
     t = time.time()
     x, f, d = scipy.optimize.fmin_l_bfgs_b(logreg_quad_obj, numpy.zeros(DTR_ext.shape[0] + 1), approx_grad = True, factr=1.0)
-    print(f'Elapsed {time.time() - t} seconds')
+    # print(f'Elapsed {time.time() - t} seconds')
     w, b = utils.mcol(x[0:-1]), x[-1]
     calibration = 0 if p == None else numpy.log(p/(1-p))
     scores = numpy.dot(w.T, DTE_ext) + b - calibration
@@ -160,7 +160,7 @@ def compute_quadratic_LR_priorW(DTR, LTR, DTE, l, p = 0.5):
     logreg_quad_obj = logreg_obj_wrap_priorW(DTR_ext, LTR, l, p)
     t = time.time()
     x, f, d = scipy.optimize.fmin_l_bfgs_b(logreg_quad_obj, numpy.zeros(DTR_ext.shape[0] + 1), approx_grad = True, factr=1.0)
-    print(f'Elapsed {time.time() - t} seconds')
+    # print(f'Elapsed {time.time() - t} seconds')
     w, b = utils.mcol(x[0:-1]), x[-1]
     calibration = 0 if p == None else numpy.log(p/(1-p))
     scores = numpy.dot(w.T, DTE_ext) + b - calibration
@@ -202,7 +202,7 @@ def trainLinearSVM(DTR, LTR, K, C, DTE, p = 0):
 
     w_hat, w, b = computePrimalFromDual(alphaStar)    
     score = computeSVMScore(w, b)
-    print(f'Elapsed {time.time() - t} seconds')
+    # print(f'Elapsed {time.time() - t} seconds')
 
     return score
     
@@ -225,12 +225,12 @@ def trainNonLinearSVM(DTR, LTR, K, C, DTE, kernel, p = 0):
         # t = time.time()
 
         for j in range(DTE.shape[1]):
-            # print(f'{j} - Elapsed {time.time() - t} seconds')
+            # # print(f'{j} - Elapsed {time.time() - t} seconds')
             for i in range(DTR.shape[1]):
                 if alpha[i] > 0:
                     score[j] += alpha[i] * Z[i] * (kernel(DTR[:, i], DTE[:, j]) + K**2)
-        # print(f'Elapsed {time.time() - t} seconds')
-        # print(score)
+        # # print(f'Elapsed {time.time() - t} seconds')
+        # # print(score)
         return score
     
     # def computeSVMScoreFast(alpha):
@@ -238,9 +238,9 @@ def trainNonLinearSVM(DTR, LTR, K, C, DTE, kernel, p = 0):
     #     t = time.time()
 
     #     for j in range(DTE.shape[1]):
-    #         print(f'{j} - Elapsed {time.time() - t} seconds')
+    #         # print(f'{j} - Elapsed {time.time() - t} seconds')
     #         score[j] += (numpy.where(alpha > 0, alpha, 0) * Z * (kernel(DTR, DTE[:, j]) + (K**2))).sum()
-    #     print(score)
+    #     # print(score)
     #     return score
     
     t = time.time()
@@ -254,8 +254,8 @@ def trainNonLinearSVM(DTR, LTR, K, C, DTE, kernel, p = 0):
     
     # score = computeSVMScoreFast(alphaStar)
     score = computeSVMScore(alphaStar)
-    # print(score - computeSVMScoreFast(alphaStar))
-    print(f'Elapsed {time.time() - t} seconds')
+    # # print(score - computeSVMScoreFast(alphaStar))
+    # print(f'Elapsed {time.time() - t} seconds')
     return score
 
 def logpdf_GMM(X, gmm):
@@ -368,7 +368,7 @@ def GMM_EM(X, gmm, psi = 0.01, covType = 'Full'):
                 newGmm.append((w, mu, sigma))
             gmm = newGmm
         
-        # print(f'LL {"Improved" if thOld == None or thNew >= thOld else "Worsened"}: {thNew}')
+        # # print(f'LL {"Improved" if thOld == None or thNew >= thOld else "Worsened"}: {thNew}')
     
     return gmm
 
@@ -376,7 +376,7 @@ def GMM_LBG(X, alpha, nComponents, psi = 0.01, covType = 'Full'):
     gmm = [(1, utils.compute_mean(X), utils.compute_cov(X))]
     
     while len(gmm) <= nComponents:
-        # print(f'\nGMM has {len(gmm)} components')
+        # # print(f'\nGMM has {len(gmm)} components')
         gmm = GMM_EM(X, gmm, psi, covType)
                 
         if len(gmm) == nComponents:

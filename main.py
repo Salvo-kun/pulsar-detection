@@ -190,31 +190,31 @@ def LogisticRegressionClassifiers(DTrain, LTrain):
         
         minDcfs = numpy.zeros((len(priors), len(lambdas)))
         
-        # for lidx in range(len(lambdas)):
-        #     l = lambdas[lidx]
-        #     scoreLLR = []
+        for lidx in range(len(lambdas)):
+            l = lambdas[lidx]
+            scoreLLR = []
             
-        #     for i in range(len(splits)):
-        #         trainSplits = splits[0:i] + splits[i+1:]
-        #         LTR = numpy.hstack([trS[1] for trS in trainSplits])
-        #         DTE = splits[i][0]
-        #         DTR = numpy.hstack([trS[0] for trS in trainSplits])
+            for i in range(len(splits)):
+                trainSplits = splits[0:i] + splits[i+1:]
+                LTR = numpy.hstack([trS[1] for trS in trainSplits])
+                DTE = splits[i][0]
+                DTR = numpy.hstack([trS[0] for trS in trainSplits])
                 
-        #         DTR, DTE = utils.gaussianize(DTR, DTE)
+                DTR, DTE = utils.gaussianize(DTR, DTE)
                 
-        #         scoreLLR = numpy.hstack([scoreLLR, models.compute_linear_LR_priorW(DTR, LTR, DTE, l)])
+                scoreLLR = numpy.hstack([scoreLLR, models.compute_linear_LR_priorW(DTR, LTR, DTE, l)])
                 
-        #     for pidx in range(len(priors)):
-        #         prior = priors[pidx]
-        #         minDcfs[pidx][lidx] += utils.computeMinDCF(scoreLLR, prior, 1, 1, LTE)
+            for pidx in range(len(priors)):
+                prior = priors[pidx]
+                minDcfs[pidx][lidx] += utils.computeMinDCF(scoreLLR, prior, 1, 1, LTE)
                 
-        # plt.figure()
-        # plt.xscale('log')
-        # plt.plot(lambdas, minDcfs[0], color='r', label=f'Min DCF (Prior = {priors[0]})')
-        # plt.plot(lambdas, minDcfs[1], color='b', label=f'Min DCF (Prior = {priors[1]})')
-        # plt.plot(lambdas, minDcfs[2], color='g', label=f'Min DCF (Prior = {priors[2]})')
-        # plt.legend()
-        # plt.savefig('Figures/LR/LinearLR_gauss.png')
+        plt.figure()
+        plt.xscale('log')
+        plt.plot(lambdas, minDcfs[0], color='r', label=f'Min DCF (Prior = {priors[0]})')
+        plt.plot(lambdas, minDcfs[1], color='b', label=f'Min DCF (Prior = {priors[1]})')
+        plt.plot(lambdas, minDcfs[2], color='g', label=f'Min DCF (Prior = {priors[2]})')
+        plt.legend()
+        plt.savefig('Figures/LR/LinearLR_gauss.png')
     
     def TrainLinearLR():
         with open('Figures/LR/Lin_results.txt', 'a') as f:
@@ -253,34 +253,34 @@ def LogisticRegressionClassifiers(DTrain, LTrain):
             
             utils.multiplePrint('\n', f)
             
-            # for dims in PCAs:                    
-            #     utils.multiplePrint(f'Gaussian features — {"no PCA" if dims == len(features) else "PCA (m = " + str(dims) + ")"}', f)
+            for dims in PCAs:                    
+                utils.multiplePrint(f'Gaussian features — {"no PCA" if dims == len(features) else "PCA (m = " + str(dims) + ")"}', f)
                 
-            #     minDcfs = numpy.zeros((len(priors)))
+                minDcfs = numpy.zeros((len(priors)))
                 
-            #     scoreLLR = []
-            #     for i in range(len(splits)):
-            #         trainSplits = splits[0:i] + splits[i+1:]
-            #         LTR = numpy.hstack([trS[1] for trS in trainSplits])
-            #         DTE = splits[i][0]
-            #         DTR = numpy.hstack([trS[0] for trS in trainSplits])
+                scoreLLR = []
+                for i in range(len(splits)):
+                    trainSplits = splits[0:i] + splits[i+1:]
+                    LTR = numpy.hstack([trS[1] for trS in trainSplits])
+                    DTE = splits[i][0]
+                    DTR = numpy.hstack([trS[0] for trS in trainSplits])
                     
-            #         DTR, DTE = utils.gaussianize(DTR, DTE)
+                    DTR, DTE = utils.gaussianize(DTR, DTE)
                     
-            #         if dims != len(features):
-            #             P, _, _ = utils.compute_PCA(DTR, dims)
-            #             DTR = numpy.dot(P.T, DTR)
-            #             DTE = numpy.dot(P.T, DTE)
+                    if dims != len(features):
+                        P, _, _ = utils.compute_PCA(DTR, dims)
+                        DTR = numpy.dot(P.T, DTR)
+                        DTE = numpy.dot(P.T, DTE)
                     
-            #         scoreLLR = numpy.hstack([scoreLLR, models.compute_linear_LR(DTR, LTR, DTE, l)])
+                    scoreLLR = numpy.hstack([scoreLLR, models.compute_linear_LR(DTR, LTR, DTE, l)])
                         
-            #     for pidx in range(len(priors)):
-            #         prior = priors[pidx]
-            #         minDcfs[pidx] += utils.computeMinDCF(scoreLLR, prior, 1, 1, LTE)
+                for pidx in range(len(priors)):
+                    prior = priors[pidx]
+                    minDcfs[pidx] += utils.computeMinDCF(scoreLLR, prior, 1, 1, LTE)
                     
-            #     minDcfs = numpy.around(minDcfs, 3)
-            #     utils.multiplePrint(f'Priors:\t\t\t\t\t\t\t{priors[0]}\t\t{priors[1]}\t\t{priors[2]}', f)
-            #     utils.multiplePrint(f'Linear LR (Prior={priors[0]}, Lambda={l}):\t\t\t\t\t\t{minDcfs[0]}\t{minDcfs[1]}\t{minDcfs[2]}', f)
+                minDcfs = numpy.around(minDcfs, 3)
+                utils.multiplePrint(f'Priors:\t\t\t\t\t\t\t{priors[0]}\t\t{priors[1]}\t\t{priors[2]}', f)
+                utils.multiplePrint(f'Linear LR (Prior={priors[0]}, Lambda={l}):\t\t\t\t\t\t{minDcfs[0]}\t{minDcfs[1]}\t{minDcfs[2]}', f)
             
     def PlotQuadraticLRMinDCF():
         splits = utils.K_folds_split(DTrain, LTrain, folds=3)
@@ -292,7 +292,7 @@ def LogisticRegressionClassifiers(DTrain, LTrain):
         for lidx in range(len(lambdas)):
             l = lambdas[lidx]
             scoreLLR = []
-            print(f'Lambda: {l}')
+            # print(f'Lambda: {l}')
 
             for i in range(len(splits)):
                 trainSplits = splits[0:i] + splits[i+1:]
@@ -304,7 +304,7 @@ def LogisticRegressionClassifiers(DTrain, LTrain):
                 
             for pidx in range(len(priors)):
                 prior = priors[pidx]
-                print(f'Prior: {prior}')
+                # print(f'Prior: {prior}')
                 minDcfs[pidx][lidx] += utils.computeMinDCF(scoreLLR, prior, 1, 1, LTE)
                 
         plt.figure()
@@ -317,31 +317,31 @@ def LogisticRegressionClassifiers(DTrain, LTrain):
         
         minDcfs = numpy.zeros((len(priors), len(lambdas)))
         
-        # for lidx in range(len(lambdas)):
-        #     l = lambdas[lidx]
-        #     scoreLLR = []
+        for lidx in range(len(lambdas)):
+            l = lambdas[lidx]
+            scoreLLR = []
             
-        #     for i in range(len(splits)):
-        #         trainSplits = splits[0:i] + splits[i+1:]
-        #         LTR = numpy.hstack([trS[1] for trS in trainSplits])
-        #         DTE = splits[i][0]
-        #         DTR = numpy.hstack([trS[0] for trS in trainSplits])
+            for i in range(len(splits)):
+                trainSplits = splits[0:i] + splits[i+1:]
+                LTR = numpy.hstack([trS[1] for trS in trainSplits])
+                DTE = splits[i][0]
+                DTR = numpy.hstack([trS[0] for trS in trainSplits])
                 
-        #         DTR, DTE = utils.gaussianize(DTR, DTE)
+                DTR, DTE = utils.gaussianize(DTR, DTE)
                 
-        #         scoreLLR = numpy.hstack([scoreLLR, models.compute_quadratic_LR_priorW(DTR, LTR, DTE, l)])
+                scoreLLR = numpy.hstack([scoreLLR, models.compute_quadratic_LR_priorW(DTR, LTR, DTE, l)])
                
-        #     for pidx in range(len(priors)):
-        #         prior = priors[pidx]
-        #         minDcfs[pidx][lidx] += utils.computeMinDCF(scoreLLR, prior, 1, 1, LTE)
+            for pidx in range(len(priors)):
+                prior = priors[pidx]
+                minDcfs[pidx][lidx] += utils.computeMinDCF(scoreLLR, prior, 1, 1, LTE)
                 
-        # plt.figure()
-        # plt.xscale('log')
-        # plt.plot(lambdas, minDcfs[0], color='r', label=f'Min DCF (Prior = {priors[0]})')
-        # plt.plot(lambdas, minDcfs[1], color='b', label=f'Min DCF (Prior = {priors[1]})')
-        # plt.plot(lambdas, minDcfs[2], color='g', label=f'Min DCF (Prior = {priors[2]})')
-        # plt.legend()
-        # plt.savefig('Figures/LR/QuadraticLR_gauss.png')
+        plt.figure()
+        plt.xscale('log')
+        plt.plot(lambdas, minDcfs[0], color='r', label=f'Min DCF (Prior = {priors[0]})')
+        plt.plot(lambdas, minDcfs[1], color='b', label=f'Min DCF (Prior = {priors[1]})')
+        plt.plot(lambdas, minDcfs[2], color='g', label=f'Min DCF (Prior = {priors[2]})')
+        plt.legend()
+        plt.savefig('Figures/LR/QuadraticLR_gauss.png')
     
     def TrainQuadraticLR():
         with open('Figures/LR/Quad_results.txt', 'a') as f:
@@ -380,45 +380,44 @@ def LogisticRegressionClassifiers(DTrain, LTrain):
                 utils.multiplePrint(f'Priors:\t\t\t\t\t\t\t{priors[0]}\t\t{priors[1]}\t\t{priors[2]}', f)
                 utils.multiplePrint(f'Quadratic LR (Prior={priors[0]}, Lambda={l}):\t\t\t\t\t\t{minDcfs[0]}\t{minDcfs[1]}\t{minDcfs[2]}', f)
                 
-            # for dims in PCAs:                    
-            #     utils.multiplePrint(f'Gaussian features — {"no PCA" if dims == len(features) else "PCA (m = " + str(dims) + ")"}', f)
+            for dims in PCAs:                    
+                utils.multiplePrint(f'Gaussian features — {"no PCA" if dims == len(features) else "PCA (m = " + str(dims) + ")"}', f)
                 
-            #     minDcfs = numpy.zeros((len(priors)))
+                minDcfs = numpy.zeros((len(priors)))
                 
-            #     scoreLLR = []
+                scoreLLR = []
                 
-            #     for i in range(len(splits)):
-            #         trainSplits = splits[0:i] + splits[i+1:]
-            #         LTR = numpy.hstack([trS[1] for trS in trainSplits])
-            #         DTE = splits[i][0]
-            #         DTR = numpy.hstack([trS[0] for trS in trainSplits])
+                for i in range(len(splits)):
+                    trainSplits = splits[0:i] + splits[i+1:]
+                    LTR = numpy.hstack([trS[1] for trS in trainSplits])
+                    DTE = splits[i][0]
+                    DTR = numpy.hstack([trS[0] for trS in trainSplits])
                     
-            #         DTR, DTE = utils.gaussianize(DTR, DTE)
+                    DTR, DTE = utils.gaussianize(DTR, DTE)
                     
-            #         if dims != len(features):
-            #             P, _, _ = utils.compute_PCA(DTR, dims)
-            #             DTR = numpy.dot(P.T, DTR)
-            #             DTE = numpy.dot(P.T, DTE)
+                    if dims != len(features):
+                        P, _, _ = utils.compute_PCA(DTR, dims)
+                        DTR = numpy.dot(P.T, DTR)
+                        DTE = numpy.dot(P.T, DTE)
                     
-            #         scoreLLR = numpy.hstack([scoreLLR, models.compute_quadratic_LR(DTR, LTR, DTE, l)])
+                    scoreLLR = numpy.hstack([scoreLLR, models.compute_quadratic_LR(DTR, LTR, DTE, l)])
                     
-            #     for pidx in range(len(priors)):
-            #         prior = priors[pidx]
-            #         minDcfs[pidx] += utils.computeMinDCF(scoreLLR, prior, 1, 1, LTE)
+                for pidx in range(len(priors)):
+                    prior = priors[pidx]
+                    minDcfs[pidx] += utils.computeMinDCF(scoreLLR, prior, 1, 1, LTE)
                     
-            #     minDcfs = numpy.around(minDcfs, 3)
-            #     utils.multiplePrint(f'Priors:\t\t\t\t\t\t\t{priors[0]}\t\t{priors[1]}\t\t{priors[2]}', f)
-            #     utils.multiplePrint(f'Quadratic LR (Prior={priors[0]}, Lambda={l}):\t\t\t\t\t\t{minDcfs[0]}\t{minDcfs[1]}\t{minDcfs[2]}', f)
+                minDcfs = numpy.around(minDcfs, 3)
+                utils.multiplePrint(f'Priors:\t\t\t\t\t\t\t{priors[0]}\t\t{priors[1]}\t\t{priors[2]}', f)
+                utils.multiplePrint(f'Quadratic LR (Prior={priors[0]}, Lambda={l}):\t\t\t\t\t\t{minDcfs[0]}\t{minDcfs[1]}\t{minDcfs[2]}', f)
     
     PlotLinearLRMinDCF()
     TrainLinearLR()
     PlotQuadraticLRMinDCF()
     TrainQuadraticLR()
-
+    
 def SupportVectorMachineClassifiers(DTrain, LTrain):
     priors = [0.500, 0.100, 0.900]
     polyKernel = lambda x1, x2: (numpy.dot(x1.T, x2) + 1) ** 2
-    # rbfKernel = lambda width: lambda x1, x2: numpy.exp(-width*(numpy.linalg.norm(x1-x2)**2)) 
     rbfKernel = lambda width: lambda x1, x2: numpy.exp(- width * (utils.mcol((x1**2).sum(0)) + utils.mrow((x2**2).sum(0)) - 2*numpy.dot(x1.T, x2)))
     K = 1
     
@@ -432,10 +431,10 @@ def SupportVectorMachineClassifiers(DTrain, LTrain):
             C = Cs[cidx]
             scoreLSVM = []
             scoreLSVMBal = []
-            print(f'C: {C}')
+            # print(f'C: {C}')
             
             for i in range(len(splits)):
-                print(f'Split: {i}')
+                # print(f'Split: {i}')
                 trainSplits = splits[0:i] + splits[i+1:]
                 LTR = numpy.hstack([trS[1] for trS in trainSplits])
                 DTE = splits[i][0]
@@ -446,7 +445,7 @@ def SupportVectorMachineClassifiers(DTrain, LTrain):
                 
             for pidx in range(len(priors)):
                 prior = priors[pidx]
-                print(f'Prior: {prior}')
+                # print(f'Prior: {prior}')
                 minDcfs[0][pidx][cidx] += utils.computeMinDCF(scoreLSVM, prior, 1, 1, LTE)
                 minDcfs[1][pidx][cidx] += utils.computeMinDCF(scoreLSVMBal, prior, 1, 1, LTE)
                 
@@ -472,10 +471,10 @@ def SupportVectorMachineClassifiers(DTrain, LTrain):
             C = Cs[cidx]
             scoreLSVM = []
             scoreLSVMBal = []
-            print(f'C: {C}')
+            # print(f'C: {C}')
             
             for i in range(len(splits)):
-                print(f'Split: {i}')
+                # print(f'Split: {i}')
                 trainSplits = splits[0:i] + splits[i+1:]
                 LTR = numpy.hstack([trS[1] for trS in trainSplits])
                 DTE = splits[i][0]
@@ -488,7 +487,7 @@ def SupportVectorMachineClassifiers(DTrain, LTrain):
                 
             for pidx in range(len(priors)):
                 prior = priors[pidx]
-                print(f'Prior: {prior}')
+                # print(f'Prior: {prior}')
                 minDcfs[0][pidx][cidx] += utils.computeMinDCF(scoreLSVM, prior, 1, 1, LTE)
                 minDcfs[1][pidx][cidx] += utils.computeMinDCF(scoreLSVMBal, prior, 1, 1, LTE)
                 
@@ -593,10 +592,10 @@ def SupportVectorMachineClassifiers(DTrain, LTrain):
             C = Cs[cidx]
             scoreLSVM = []
             scoreLSVMBal = []
-            print(f'C: {C}')
+            # print(f'C: {C}')
             
             for i in range(len(splits)):
-                print(f'Split: {i}')
+                # print(f'Split: {i}')
                 trainSplits = splits[0:i] + splits[i+1:]
                 LTR = numpy.hstack([trS[1] for trS in trainSplits])
                 DTE = splits[i][0]
@@ -607,7 +606,7 @@ def SupportVectorMachineClassifiers(DTrain, LTrain):
                 
             for pidx in range(len(priors)):
                 prior = priors[pidx]
-                print(f'Prior: {prior}')
+                # print(f'Prior: {prior}')
                 minDcfs[0][pidx][cidx] += utils.computeMinDCF(scoreLSVM, prior, 1, 1, LTE)
                 minDcfs[1][pidx][cidx] += utils.computeMinDCF(scoreLSVMBal, prior, 1, 1, LTE)
                 
@@ -633,10 +632,10 @@ def SupportVectorMachineClassifiers(DTrain, LTrain):
             C = Cs[cidx]
             scoreLSVM = []
             scoreLSVMBal = []
-            print(f'C: {C}')
+            # print(f'C: {C}')
             
             for i in range(len(splits)):
-                print(f'Split: {i}')
+                # print(f'Split: {i}')
                 trainSplits = splits[0:i] + splits[i+1:]
                 LTR = numpy.hstack([trS[1] for trS in trainSplits])
                 DTE = splits[i][0]
@@ -649,7 +648,7 @@ def SupportVectorMachineClassifiers(DTrain, LTrain):
                 
             for pidx in range(len(priors)):
                 prior = priors[pidx]
-                print(f'Prior: {prior}')
+                # print(f'Prior: {prior}')
                 minDcfs[0][pidx][cidx] += utils.computeMinDCF(scoreLSVM, prior, 1, 1, LTE)
                 minDcfs[1][pidx][cidx] += utils.computeMinDCF(scoreLSVMBal, prior, 1, 1, LTE)
                 
@@ -686,7 +685,7 @@ def SupportVectorMachineClassifiers(DTrain, LTrain):
                 scoreLSVMBal = []
                     
                 for i in range(len(splits)):
-                    print(f'Split: {i}')
+                    # print(f'Split: {i}')
                     trainSplits = splits[0:i] + splits[i+1:]
                     LTR = numpy.hstack([trS[1] for trS in trainSplits])
                     DTE = splits[i][0]
@@ -721,7 +720,7 @@ def SupportVectorMachineClassifiers(DTrain, LTrain):
                 scoreLSVMBal = []
                 
                 for i in range(len(splits)):
-                    print(f'Split: {i}')
+                    # print(f'Split: {i}')
                     trainSplits = splits[0:i] + splits[i+1:]
                     LTR = numpy.hstack([trS[1] for trS in trainSplits])
                     DTE = splits[i][0]
@@ -757,33 +756,33 @@ def SupportVectorMachineClassifiers(DTrain, LTrain):
         
         for cidx in range(len(Cs)):
             C = Cs[cidx]
-            print(f'C: {C}')
+            # print(f'C: {C}')
             for widx in range(len(widths)):
                 width = widths[widx]
-                print(f'width: {width}')
+                # print(f'width: {width}')
                 scoreLSVM = []
                 scoreLSVMBal = []
                 
                 for i in range(len(splits)):
-                    print(f'Split: {i}')
+                    # print(f'Split: {i}')
                     trainSplits = splits[0:i] + splits[i+1:]
                     LTR = numpy.hstack([trS[1] for trS in trainSplits])
                     DTE = splits[i][0]
                     DTR = numpy.hstack([trS[0] for trS in trainSplits])
                     
-                    # scoreLSVM = numpy.hstack([scoreLSVM, models.trainNonLinearSVM(DTR, LTR, K, C, DTE, rbfKernel(width), 0)])
+                    scoreLSVM = numpy.hstack([scoreLSVM, models.trainNonLinearSVM(DTR, LTR, K, C, DTE, rbfKernel(width), 0)])
                     scoreLSVMBal = numpy.hstack([scoreLSVMBal, models.trainNonLinearSVM(DTR, LTR, K, C, DTE, rbfKernel(width), 0.5)])
                     
-                # minDcfs[0][widx][cidx] += utils.computeMinDCF(scoreLSVM, 0.5, 1, 1, LTE)
+                minDcfs[0][widx][cidx] += utils.computeMinDCF(scoreLSVM, 0.5, 1, 1, LTE)
                 minDcfs[1][widx][cidx] += utils.computeMinDCF(scoreLSVMBal, 0.5, 1, 1, LTE)
                 
-        # plt.figure()
-        # plt.xscale('log')
-        # plt.plot(Cs, minDcfs[0][0], color='r', label=f'Min DCF (Width = {widths[0]})')
-        # plt.plot(Cs, minDcfs[0][1], color='b', label=f'Min DCF (Width = {widths[1]})')
-        # plt.plot(Cs, minDcfs[0][2], color='g', label=f'Min DCF (Width = {widths[2]})')
-        # plt.legend()
-        # plt.savefig('Figures/SVM/RBFSVM_raw.png')
+        plt.figure()
+        plt.xscale('log')
+        plt.plot(Cs, minDcfs[0][0], color='r', label=f'Min DCF (Width = {widths[0]})')
+        plt.plot(Cs, minDcfs[0][1], color='b', label=f'Min DCF (Width = {widths[1]})')
+        plt.plot(Cs, minDcfs[0][2], color='g', label=f'Min DCF (Width = {widths[2]})')
+        plt.legend()
+        plt.savefig('Figures/SVM/RBFSVM_raw.png')
         
         plt.figure()
         plt.xscale('log')
@@ -795,44 +794,44 @@ def SupportVectorMachineClassifiers(DTrain, LTrain):
         
         minDcfs = numpy.zeros((2, len(widths), len(Cs)))
         
-        # for cidx in range(len(Cs)):
-        #     C = Cs[cidx]
-        #     for widx in range(len(widths)):
-        #         width = widths[widx]
-        #         scoreLSVM = []
-        #         scoreLSVMBal = []
-        #         print(f'C: {C}')
+        for cidx in range(len(Cs)):
+            C = Cs[cidx]
+            for widx in range(len(widths)):
+                width = widths[widx]
+                scoreLSVM = []
+                scoreLSVMBal = []
+                # print(f'C: {C}')
                 
-        #         for i in range(len(splits)):
-        #             print(f'Split: {i}')
-        #             trainSplits = splits[0:i] + splits[i+1:]
-        #             LTR = numpy.hstack([trS[1] for trS in trainSplits])
-        #             DTE = splits[i][0]
-        #             DTR = numpy.hstack([trS[0] for trS in trainSplits])
+                for i in range(len(splits)):
+                    # print(f'Split: {i}')
+                    trainSplits = splits[0:i] + splits[i+1:]
+                    LTR = numpy.hstack([trS[1] for trS in trainSplits])
+                    DTE = splits[i][0]
+                    DTR = numpy.hstack([trS[0] for trS in trainSplits])
                    
-        #             DTR, DTE = utils.gaussianize(DTR, DTE)
+                    DTR, DTE = utils.gaussianize(DTR, DTE)
                     
-        #             scoreLSVM = numpy.hstack([scoreLSVM, models.trainNonLinearSVM(DTR, LTR, K, C, DTE, rbfKernel(width), 0)])
-        #             scoreLSVMBal = numpy.hstack([scoreLSVMBal, models.trainNonLinearSVM(DTR, LTR, K, C, DTE, rbfKernel(width), 0.5)])
+                    scoreLSVM = numpy.hstack([scoreLSVM, models.trainNonLinearSVM(DTR, LTR, K, C, DTE, rbfKernel(width), 0)])
+                    scoreLSVMBal = numpy.hstack([scoreLSVMBal, models.trainNonLinearSVM(DTR, LTR, K, C, DTE, rbfKernel(width), 0.5)])
                     
-        #         minDcfs[0][widx][cidx] += utils.computeMinDCF(scoreLSVM, 0.5, 1, 1, LTE)
-        #         minDcfs[1][widx][cidx] += utils.computeMinDCF(scoreLSVMBal, 0.5, 1, 1, LTE)
+                minDcfs[0][widx][cidx] += utils.computeMinDCF(scoreLSVM, 0.5, 1, 1, LTE)
+                minDcfs[1][widx][cidx] += utils.computeMinDCF(scoreLSVMBal, 0.5, 1, 1, LTE)
                 
-        # plt.figure()
-        # plt.xscale('log')
-        # plt.plot(Cs, minDcfs[0][0], color='r', label=f'Min DCF (Width = {widths[0]})')
-        # plt.plot(Cs, minDcfs[0][1], color='b', label=f'Min DCF (Width = {widths[1]})')
-        # plt.plot(Cs, minDcfs[0][2], color='g', label=f'Min DCF (Width = {widths[2]})')
-        # plt.legend()
-        # plt.savefig('Figures/SVM/RBFSVM_gauss.png')
+        plt.figure()
+        plt.xscale('log')
+        plt.plot(Cs, minDcfs[0][0], color='r', label=f'Min DCF (Width = {widths[0]})')
+        plt.plot(Cs, minDcfs[0][1], color='b', label=f'Min DCF (Width = {widths[1]})')
+        plt.plot(Cs, minDcfs[0][2], color='g', label=f'Min DCF (Width = {widths[2]})')
+        plt.legend()
+        plt.savefig('Figures/SVM/RBFSVM_gauss.png')
         
-        # plt.figure()
-        # plt.xscale('log')
-        # plt.plot(Cs, minDcfs[1][0], color='r', label=f'Min DCF (Width = {widths[0]})')
-        # plt.plot(Cs, minDcfs[1][1], color='b', label=f'Min DCF (Width = {widths[1]})')
-        # plt.plot(Cs, minDcfs[1][2], color='g', label=f'Min DCF (Width = {widths[2]})')
-        # plt.legend()
-        # plt.savefig('Figures/SVM/RBFSVMBal_gauss.png')
+        plt.figure()
+        plt.xscale('log')
+        plt.plot(Cs, minDcfs[1][0], color='r', label=f'Min DCF (Width = {widths[0]})')
+        plt.plot(Cs, minDcfs[1][1], color='b', label=f'Min DCF (Width = {widths[1]})')
+        plt.plot(Cs, minDcfs[1][2], color='g', label=f'Min DCF (Width = {widths[2]})')
+        plt.legend()
+        plt.savefig('Figures/SVM/RBFSVMBal_gauss.png')
     
     def TrainRBFSVMClassifiers():
         with open('Figures/SVM/RBF_results.txt', 'a') as f:
@@ -852,7 +851,7 @@ def SupportVectorMachineClassifiers(DTrain, LTrain):
                 scoreLSVMBal = []
                     
                 for i in range(len(splits)):
-                    print(f'Split: {i}')
+                    # print(f'Split: {i}')
                     trainSplits = splits[0:i] + splits[i+1:]
                     LTR = numpy.hstack([trS[1] for trS in trainSplits])
                     DTE = splits[i][0]
@@ -879,51 +878,49 @@ def SupportVectorMachineClassifiers(DTrain, LTrain):
                 
                 utils.multiplePrint('\n', f)
                 
-            # for dims in PCAs:
+            for dims in PCAs:
                     
-            #     utils.multiplePrint(f'Gaussian features — {"no PCA" if dims == len(features) else "PCA (m = " + str(dims) + ")"}', f)
-            #     minDcfs = numpy.zeros((2, len(priors)))
-            #     scoreLSVM = []
-            #     scoreLSVMBal = []
+                utils.multiplePrint(f'Gaussian features — {"no PCA" if dims == len(features) else "PCA (m = " + str(dims) + ")"}', f)
+                minDcfs = numpy.zeros((2, len(priors)))
+                scoreLSVM = []
+                scoreLSVMBal = []
                 
-            #     for i in range(len(splits)):
-            #         print(f'Split: {i}')
-            #         trainSplits = splits[0:i] + splits[i+1:]
-            #         LTR = numpy.hstack([trS[1] for trS in trainSplits])
-            #         DTE = splits[i][0]
-            #         DTR = numpy.hstack([trS[0] for trS in trainSplits])
+                for i in range(len(splits)):
+                    # print(f'Split: {i}')
+                    trainSplits = splits[0:i] + splits[i+1:]
+                    LTR = numpy.hstack([trS[1] for trS in trainSplits])
+                    DTE = splits[i][0]
+                    DTR = numpy.hstack([trS[0] for trS in trainSplits])
                     
-            #         DTR, DTE = utils.gaussianize(DTR, DTE)
+                    DTR, DTE = utils.gaussianize(DTR, DTE)
                     
-            #         if dims != len(features):
-            #             P, _, _ = utils.compute_PCA(DTR, dims)
-            #             DTR = numpy.dot(P.T, DTR)
-            #             DTE = numpy.dot(P.T, DTE)
+                    if dims != len(features):
+                        P, _, _ = utils.compute_PCA(DTR, dims)
+                        DTR = numpy.dot(P.T, DTR)
+                        DTE = numpy.dot(P.T, DTE)
                         
-            #         scoreLSVM = numpy.hstack([scoreLSVM, models.trainNonLinearSVM(DTR, LTR, K, C, DTE, rbfKernel(width), 0)])
-            #         scoreLSVMBal = numpy.hstack([scoreLSVMBal, models.trainNonLinearSVM(DTR, LTR, K, C, DTE, rbfKernel(width), 0.5)])
+                    scoreLSVM = numpy.hstack([scoreLSVM, models.trainNonLinearSVM(DTR, LTR, K, C, DTE, rbfKernel(width), 0)])
+                    scoreLSVMBal = numpy.hstack([scoreLSVMBal, models.trainNonLinearSVM(DTR, LTR, K, C, DTE, rbfKernel(width), 0.5)])
                     
-            #     for pidx in range(len(priors)):
-            #         prior = priors[pidx]
-            #         minDcfs[0][pidx] += utils.computeMinDCF(scoreLSVM, prior, 1, 1, LTE)
-            #         minDcfs[1][pidx] += utils.computeMinDCF(scoreLSVMBal, prior, 1, 1, LTE)
+                for pidx in range(len(priors)):
+                    prior = priors[pidx]
+                    minDcfs[0][pidx] += utils.computeMinDCF(scoreLSVM, prior, 1, 1, LTE)
+                    minDcfs[1][pidx] += utils.computeMinDCF(scoreLSVMBal, prior, 1, 1, LTE)
                         
                         
-            #     minDcfs = numpy.around(minDcfs, 3)
-            #     utils.multiplePrint(f'Priors:\t\t\t\t\t\t\t\t\t\t\t\t\t\t{priors[0]}\t\t{priors[1]}\t\t{priors[2]}', f)
-            #     utils.multiplePrint(f'RBF SVM (C = {C}):\t\t\t\t\t\t{minDcfs[0][0]}\t{minDcfs[0][1]}\t{minDcfs[0][2]}', f)
-            #     utils.multiplePrint(f'RBF SVM Balanced (Prior= 0.5, C = {C}):\t\t\t\t\t\t{minDcfs[1][0]}\t{minDcfs[1][1]}\t{minDcfs[1][2]}', f)
+                minDcfs = numpy.around(minDcfs, 3)
+                utils.multiplePrint(f'Priors:\t\t\t\t\t\t\t\t\t\t\t\t\t\t{priors[0]}\t\t{priors[1]}\t\t{priors[2]}', f)
+                utils.multiplePrint(f'RBF SVM (C = {C}):\t\t\t\t\t\t{minDcfs[0][0]}\t{minDcfs[0][1]}\t{minDcfs[0][2]}', f)
+                utils.multiplePrint(f'RBF SVM Balanced (Prior= 0.5, C = {C}):\t\t\t\t\t\t{minDcfs[1][0]}\t{minDcfs[1][1]}\t{minDcfs[1][2]}', f)
     
-    print('Linear Plot')
-    # PlotLinearSVMMinDCF()
-    # TrainLinearSVMClassifiers()
-    print('Quad Plot')
-    # PlotQuadraticSVMMinDCF()
-    # TrainQuadraticSVMClassifiers()
-    print('RBF Plot')
-    # PlotRBFSVMMinDCF()
+    PlotLinearSVMMinDCF()
+    TrainLinearSVMClassifiers()
+    PlotQuadraticSVMMinDCF()
+    TrainQuadraticSVMClassifiers()
+    PlotRBFSVMMinDCF()
     TrainRBFSVMClassifiers()
 
+    
 def GaussianMixturesClassifiers(DTrain, LTrain):
     priors = [0.500, 0.100, 0.900]
     
@@ -940,10 +937,10 @@ def GaussianMixturesClassifiers(DTrain, LTrain):
             llrNaive = []
             llrTied = []
             llrNaiveTied = []
-            print(f'Components: {c}')
+            # print(f'Components: {c}')
             
             for i in range(len(splits)):
-                print(f'Split: {i}')
+                # print(f'Split: {i}')
                 trainSplits = splits[0:i] + splits[i+1:]
                 LTR = numpy.hstack([trS[1] for trS in trainSplits])
                 DTE = splits[i][0]
@@ -965,10 +962,10 @@ def GaussianMixturesClassifiers(DTrain, LTrain):
             llrNaive = []
             llrTied = []
             llrNaiveTied = []
-            print(f'Components: {c}')
+            # print(f'Components: {c}')
             
             for i in range(len(splits)):
-                print(f'Split: {i}')
+                # print(f'Split: {i}')
                 trainSplits = splits[0:i] + splits[i+1:]
                 LTR = numpy.hstack([trS[1] for trS in trainSplits])
                 DTE = splits[i][0]
@@ -1027,7 +1024,7 @@ def GaussianMixturesClassifiers(DTrain, LTrain):
                 minDcf = numpy.zeros((4, len(priors)))
     
                 for i in range(len(splits)):
-                    print(f'Split: {i}')
+                    # print(f'Split: {i}')
                     trainSplits = splits[0:i] + splits[i+1:]
                     LTR = numpy.hstack([trS[1] for trS in trainSplits])
                     DTE = splits[i][0]
@@ -1103,7 +1100,7 @@ def GaussianMixturesClassifiers(DTrain, LTrain):
                 utils.multiplePrint(f'GMM Tied (512 gau):\t\t\t\t\t\t{minDcf[2][0]}\t{minDcf[2][1]}\t{minDcf[2][2]}', f)
                 utils.multiplePrint(f'GMM Tied Diag (512 gau):\t\t\t\t\t{minDcf[3][0]}\t{minDcf[3][1]}\t{minDcf[3][2]}', f)
     
-    # PlotGMMMinDCF()
+    PlotGMMMinDCF()
     TrainGMMClassifiers()
     
 def ComputeStatsBestModels(DTrain, LTrain):
@@ -1123,7 +1120,7 @@ def ComputeStatsBestModels(DTrain, LTrain):
         dims = 7    
     
         for i in range(len(splits)):
-            print(f'Split: {i}')
+            # print(f'Split: {i}')
             trainSplits = splits[0:i] + splits[i+1:]
             LTR = numpy.hstack([trS[1] for trS in trainSplits])
             DTE = splits[i][0]
@@ -1189,7 +1186,7 @@ def ComputeStatsBestModels(DTrain, LTrain):
         l = 1e-5
         
         for i in range(len(splits)):
-            print(f'Split: {i}')
+            # print(f'Split: {i}')
             trainSplits = splits[0:i] + splits[i+1:]
             LTR = numpy.hstack([trS[1] for trS in trainSplits])
             DTE = splits[i][0]
@@ -1240,12 +1237,13 @@ def ComputeStatsBestModels(DTrain, LTrain):
             utils.multiplePrint(f'Quadratic LR (Prior=0.5, Lambda=1e-05):\t\t\t\t\t\t{minDcfs[0]} {dcfs[0]} {calDcfs[0]}\t{minDcfs[1]} {dcfs[1]} {calDcfs[1]}\t{minDcfs[2]} {dcfs[2]} {calDcfs[2]}', f)
     
     def BestSVM():
-        ## Quadratic SVM Balanced (Prior= 0.5, C = 0.01) PCA = 7
+        ## RBF SVM Balanced (Prior= 0.5, C = 1, width = 0.1) PCA = 7
         splits = utils.K_folds_split(DTrain, LTrain, folds=3)
         LTE = numpy.hstack([s[1] for s in splits])
-        polyKernel = lambda x1, x2: (numpy.dot(x1.T, x2) + 1) ** 2
+        rbfKernel = lambda width: lambda x1, x2: numpy.exp(- width * (utils.mcol((x1**2).sum(0)) + utils.mrow((x2**2).sum(0)) - 2*numpy.dot(x1.T, x2)))
         K = 1
-        C = 1e-2
+        C = 1.0
+        width = 0.1
         llrQSVM = []
         calLlrQSVM = []
         priors = numpy.array([0.5, 0.1, 0.9])
@@ -1256,7 +1254,7 @@ def ComputeStatsBestModels(DTrain, LTrain):
         dims = 7
         
         for i in range(len(splits)):
-            print(f'Split: {i}')
+            # print(f'Split: {i}')
             trainSplits = splits[0:i] + splits[i+1:]
             LTR = numpy.hstack([trS[1] for trS in trainSplits])
             DTE = splits[i][0]
@@ -1267,7 +1265,7 @@ def ComputeStatsBestModels(DTrain, LTrain):
                 DTR = numpy.dot(P.T, DTR)
                 DTE = numpy.dot(P.T, DTE)
             
-            scores = models.trainNonLinearSVM(DTR, LTR, K, C, DTE, polyKernel, 0.5)
+            scores = models.trainNonLinearSVM(DTR, LTR, K, C, DTE, rbfKernel(width), 0.5)
             llrQSVM = numpy.hstack([llrQSVM, scores])
             calLlrQSVM = numpy.hstack([calLlrQSVM, models.compute_linear_LR_priorW(utils.mrow(scores), splits[i][1], utils.mrow(scores), 1e-3, 0.5)])
             
@@ -1288,7 +1286,7 @@ def ComputeStatsBestModels(DTrain, LTrain):
         plt.legend()
         plt.ylim([0, 1.1])
         plt.xlim([-3, 3])
-        plt.savefig('Figures/Best/QuadSVMminDCFVsActualDCF.png')
+        plt.savefig('Figures/Best/RBFSVMminDCFVsActualDCF.png')
         
         plt.figure()
         plt.plot(effPriorLogOdds[:21], calDcfs[:21], label='DCF', color='r')
@@ -1296,15 +1294,15 @@ def ComputeStatsBestModels(DTrain, LTrain):
         plt.legend()
         plt.ylim([0, 1.1])
         plt.xlim([-3, 3])
-        plt.savefig('Figures/Best/QuadSVMminDCFVsActualDCFCalibrated.png')
+        plt.savefig('Figures/Best/RBFSVMminDCFVsActualDCFCalibrated.png')
         
         with open('Figures/Best/results.txt', 'a') as f:
             minDcfs = numpy.around(minDcfs[-3::], 3)
             dcfs = numpy.around(dcfs[-3::], 3)
             calDcfs = numpy.around(calDcfs[-3::], 3)
-            utils.multiplePrint('Quadratic SVM Raw Features PCA = 7', f)
+            utils.multiplePrint('RBF SVM Raw Features PCA = 7', f)
             utils.multiplePrint(f'Priors:\t\t\t\t\t\t\t\t\t\t\t\t\t\t{priors[0]}\t\t\t\t{priors[1]}\t\t\t\t{priors[2]}', f)
-            utils.multiplePrint(f'Quadratic SVM Balanced (Prior= 0.5, C = 0.01):\t\t\t\t\t\t{minDcfs[0]} {dcfs[0]} {calDcfs[0]}\t{minDcfs[1]} {dcfs[1]} {calDcfs[1]}\t{minDcfs[2]} {dcfs[2]} {calDcfs[2]}', f)
+            utils.multiplePrint(f'RBF SVM Balanced (Prior= 0.5, C = 0.01):\t\t\t\t\t\t{minDcfs[0]} {dcfs[0]} {calDcfs[0]}\t{minDcfs[1]} {dcfs[1]} {calDcfs[1]}\t{minDcfs[2]} {dcfs[2]} {calDcfs[2]}', f)
     
     
     def BestGMM():
@@ -1321,7 +1319,7 @@ def ComputeStatsBestModels(DTrain, LTrain):
         calDcfs = []
     
         for i in range(len(splits)):
-            print(f'Split: {i}')
+            # print(f'Split: {i}')
             trainSplits = splits[0:i] + splits[i+1:]
             LTR = numpy.hstack([trS[1] for trS in trainSplits])
             DTE = splits[i][0]
@@ -1573,8 +1571,8 @@ def EvaluateAllModels(DTrain, LTrain, DEval, LEval):
             
             PCAs = [8, 7]
             K = 1
-            C = 1e-2
-            width = 1e1-3
+            C = 1.0
+            width = 0.1
             
             for dims in PCAs:
                     
@@ -1654,13 +1652,13 @@ def EvaluateAllModels(DTrain, LTrain, DEval, LEval):
                 
             utils.multiplePrint('\n', f)
     
-    # TrainGaussianClassifiers(DTrain, LTrain, DEval, LEval)
+    TrainGaussianClassifiers(DTrain, LTrain, DEval, LEval)
     TrainLinearLR(DTrain, LTrain, DEval, LEval)
     TrainQuadraticLR(DTrain, LTrain, DEval, LEval)
-    # TrainLinearSVMClassifiers(DTrain, LTrain, DEval, LEval)
-    # TrainQuadraticSVMClassifiers(DTrain, LTrain, DEval, LEval)
-    # TrainRBFSVMClassifiers(DTrain, LTrain, DEval, LEval)
-    # TrainGMMClassifiers(DTrain, LTrain, DEval, LEval)
+    TrainLinearSVMClassifiers(DTrain, LTrain, DEval, LEval)
+    TrainQuadraticSVMClassifiers(DTrain, LTrain, DEval, LEval)
+    TrainRBFSVMClassifiers(DTrain, LTrain, DEval, LEval)
+    TrainGMMClassifiers(DTrain, LTrain, DEval, LEval)
     
 def ComputeStatsBestModelsAfterEval(DTrain, LTrain, DEval, LEval):
     def BestMVG():
@@ -1790,8 +1788,9 @@ def ComputeStatsBestModelsAfterEval(DTrain, LTrain, DEval, LEval):
         return utils.computeParametersForRoc(llrQLR, LTE)
     
     def BestSVM():
-        ## Quadratic SVM Balanced (Prior= 0.5, C = 0.01) PCA = 7
-        polyKernel = lambda x1, x2: (numpy.dot(x1.T, x2) + 1) ** 2
+        ## RBF SVM Balanced (Prior= 0.5, C = 1, width = 0.1) PCA = 7
+        rbfKernel = lambda width: lambda x1, x2: numpy.exp(- width * (utils.mcol((x1**2).sum(0)) + utils.mrow((x2**2).sum(0)) - 2*numpy.dot(x1.T, x2)))
+        width = 0.1
         K = 1
         llrQSVM = []
         calLlrQSVM = []
@@ -1801,7 +1800,7 @@ def ComputeStatsBestModelsAfterEval(DTrain, LTrain, DEval, LEval):
         minDcfs = []
         calDcfs = []
         dims = 7    
-        C = 1e-2
+        C = 1.0
         DTR = DTrain
         LTR = LTrain
         DTE = DEval
@@ -1813,9 +1812,9 @@ def ComputeStatsBestModelsAfterEval(DTrain, LTrain, DEval, LEval):
             DTR = numpy.dot(P.T, DTR)
             DTE = numpy.dot(P.T, DTE)
         
-        scores = models.trainNonLinearSVM(DTR, LTR, K, C, DTE, polyKernel, 0.5)
+        scores = models.trainNonLinearSVM(DTR, LTR, K, C, DTE, rbfKernel(width), 0.5)
         llrQSVM = numpy.hstack([llrQSVM, scores])
-        calLlrQSVM = numpy.hstack([calLlrQSVM, models.compute_linear_LR_priorW(utils.mrow(models.trainNonLinearSVM(DTR, LTR, K, C, DTR, polyKernel, 0.5)), LTR, utils.mrow(scores), 1e-3, 0.5)])
+        calLlrQSVM = numpy.hstack([calLlrQSVM, models.compute_linear_LR_priorW(utils.mrow(models.trainNonLinearSVM(DTR, LTR, K, C, DTR, rbfKernel(width), 0.5)), LTR, utils.mrow(scores), 1e-3, 0.5)])
             
         for eplo in effPriorLogOdds:
             negPrior = 1 / (1 + numpy.exp(-eplo))
@@ -1834,7 +1833,7 @@ def ComputeStatsBestModelsAfterEval(DTrain, LTrain, DEval, LEval):
         plt.legend()
         plt.ylim([0, 1.1])
         plt.xlim([-3, 3])
-        plt.savefig('Figures/Eval/QuadSVMminDCFVsActualDCF.png')
+        plt.savefig('Figures/Eval/RBFSVMminDCFVsActualDCF.png')
         
         plt.figure()
         plt.plot(effPriorLogOdds[:21], calDcfs[:21], label='DCF', color='r')
@@ -1842,15 +1841,15 @@ def ComputeStatsBestModelsAfterEval(DTrain, LTrain, DEval, LEval):
         plt.legend()
         plt.ylim([0, 1.1])
         plt.xlim([-3, 3])
-        plt.savefig('Figures/Eval/QuadSVMminDCFVsActualDCFCalibrated.png')
+        plt.savefig('Figures/Eval/RBFSVMminDCFVsActualDCFCalibrated.png')
         
         with open('Figures/Eval/best_results.txt', 'a') as f:
             minDcfs = numpy.around(minDcfs[-3::], 3)
             dcfs = numpy.around(dcfs[-3::], 3)
             calDcfs = numpy.around(calDcfs[-3::], 3)
-            utils.multiplePrint('Quadratic SVM Raw Features PCA = 7', f)
+            utils.multiplePrint('RBF SVM Raw Features PCA = 7', f)
             utils.multiplePrint(f'Priors:\t\t\t\t\t\t\t\t\t\t\t\t\t\t{priors[0]}\t\t\t\t{priors[1]}\t\t\t\t{priors[2]}', f)
-            utils.multiplePrint(f'Quadratic SVM Balanced (Prior= 0.5, C = 0.01):\t\t\t\t\t\t{minDcfs[0]} {dcfs[0]} {calDcfs[0]}\t{minDcfs[1]} {dcfs[1]} {calDcfs[1]}\t{minDcfs[2]} {dcfs[2]} {calDcfs[2]}', f)
+            utils.multiplePrint(f'RBF SVM Balanced (Prior= 0.5, C = 0.01):\t\t\t\t\t\t{minDcfs[0]} {dcfs[0]} {calDcfs[0]}\t{minDcfs[1]} {dcfs[1]} {calDcfs[1]}\t{minDcfs[2]} {dcfs[2]} {calDcfs[2]}', f)
         
         return utils.computeParametersForRoc(llrQSVM, LTE)
     
@@ -1918,7 +1917,7 @@ def ComputeStatsBestModelsAfterEval(DTrain, LTrain, DEval, LEval):
     plt.figure()
     plt.plot(FprMVG, TprMVG, label='MVG Tied', color='r')
     plt.plot(FprLR, TprLR, label='Quad LR', color='b')
-    plt.plot(FprSVM, TprSVM, label='Quad SVM', color='y')
+    plt.plot(FprSVM, TprSVM, label='RBF SVM', color='y')
     plt.plot(FprGMM, TprGMM, label='GMM Full 8 comp', color='g')
     plt.legend()
     plt.grid()
@@ -1934,7 +1933,7 @@ def ComputeStatsBestModelsAfterEval(DTrain, LTrain, DEval, LEval):
     plt.figure()
     plt.plot(FprMVG, FnrMVG, label='MVG Tied', color='r')
     plt.plot(FprLR, FnrLR, label='Quad LR', color='b')
-    plt.plot(FprSVM, FnrSVM, label='Quad SVM', color='y')
+    plt.plot(FprSVM, FnrSVM, label='RBF SVM', color='y')
     plt.plot(FprGMM, FnrGMM, label='GMM Full 8 comp', color='g')
     plt.yscale('log')
     plt.xscale('log')
@@ -1950,42 +1949,23 @@ if __name__ == '__main__':
     DEval, LEval = load_dataset('./data/Test.txt')
     
     DTR_n, DEV_n = utils.z_normalize(DTrain, DEval)
-    # plot_hist(DTR_n, LTrain, 'Figures/features/hist_znorm')
+    plot_hist(DTR_n, LTrain, 'Figures/features/hist_znorm')
     
     DTR_g, DEV_g = utils.gaussianize(DTR_n, DEV_n)
-    # plot_hist(DTR_g, LTrain, 'Figures/features/hist_gauss')
+    plot_hist(DTR_g, LTrain, 'Figures/features/hist_gauss')
     
-    # plot_heatmap(utils.pearsonCorrelation(DTR_n), 'Greys', 'Figures/features/corrHeatmap_all_raw')
-    # plot_heatmap(utils.pearsonCorrelation(DTR_n[:, LTrain == 1]), 'Reds', 'Figures/features/corrHeatmap_pulsar_raw')
-    # plot_heatmap(utils.pearsonCorrelation(DTR_n[:, LTrain == 0]), 'Blues', 'Figures/features/corrHeatmap_notPulsar_raw')
-    # plot_heatmap(utils.pearsonCorrelation(DTR_g), 'Greys', 'Figures/features/corrHeatmap_all_gauss')
-    # plot_heatmap(utils.pearsonCorrelation(DTR_g[:, LTrain == 1]), 'Reds', 'Figures/features/corrHeatmap_pulsar_gauss')
-    # plot_heatmap(utils.pearsonCorrelation(DTR_g[:, LTrain == 0]), 'Blues', 'Figures/features/corrHeatmap_notPulsar_gauss')
+    plot_heatmap(utils.pearsonCorrelation(DTR_n), 'Greys', 'Figures/features/corrHeatmap_all_raw')
+    plot_heatmap(utils.pearsonCorrelation(DTR_n[:, LTrain == 1]), 'Reds', 'Figures/features/corrHeatmap_pulsar_raw')
+    plot_heatmap(utils.pearsonCorrelation(DTR_n[:, LTrain == 0]), 'Blues', 'Figures/features/corrHeatmap_notPulsar_raw')
+    plot_heatmap(utils.pearsonCorrelation(DTR_g), 'Greys', 'Figures/features/corrHeatmap_all_gauss')
+    plot_heatmap(utils.pearsonCorrelation(DTR_g[:, LTrain == 1]), 'Reds', 'Figures/features/corrHeatmap_pulsar_gauss')
+    plot_heatmap(utils.pearsonCorrelation(DTR_g[:, LTrain == 0]), 'Blues', 'Figures/features/corrHeatmap_notPulsar_gauss')
     
-    # GaussianClassifiers(DTR_n, LTrain)
-    # LogisticRegressionClassifiers(DTR_n, LTrain)    
-if __name__ == '__main__':
-    DTrain, LTrain = load_dataset('./data/Train.txt')
-    DEval, LEval = load_dataset('./data/Test.txt')
-    
-    DTR_n, DEV_n = utils.z_normalize(DTrain, DEval)
-    # plot_hist(DTR_n, LTrain, 'Figures/features/hist_znorm')
-    
-    DTR_g, DEV_g = utils.gaussianize(DTR_n, DEV_n)
-    # plot_hist(DTR_g, LTrain, 'Figures/features/hist_gauss')
-    
-    # plot_heatmap(utils.pearsonCorrelation(DTR_n), 'Greys', 'Figures/features/corrHeatmap_all_raw')
-    # plot_heatmap(utils.pearsonCorrelation(DTR_n[:, LTrain == 1]), 'Reds', 'Figures/features/corrHeatmap_pulsar_raw')
-    # plot_heatmap(utils.pearsonCorrelation(DTR_n[:, LTrain == 0]), 'Blues', 'Figures/features/corrHeatmap_notPulsar_raw')
-    # plot_heatmap(utils.pearsonCorrelation(DTR_g), 'Greys', 'Figures/features/corrHeatmap_all_gauss')
-    # plot_heatmap(utils.pearsonCorrelation(DTR_g[:, LTrain == 1]), 'Reds', 'Figures/features/corrHeatmap_pulsar_gauss')
-    # plot_heatmap(utils.pearsonCorrelation(DTR_g[:, LTrain == 0]), 'Blues', 'Figures/features/corrHeatmap_notPulsar_gauss')
-    
-    # GaussianClassifiers(DTR_n, LTrain)
-    # LogisticRegressionClassifiers(DTR_n, LTrain)    
+    GaussianClassifiers(DTR_n, LTrain)
+    LogisticRegressionClassifiers(DTR_n, LTrain)    
     SupportVectorMachineClassifiers(DTR_n, LTrain)    
-    # GaussianMixturesClassifiers(DTR_n, LTrain)
+    GaussianMixturesClassifiers(DTR_n, LTrain)
     
-    # ComputeStatsBestModels(DTR_n, LTrain)
-    # EvaluateAllModels(DTR_n, LTrain, DEV_n, LEval)
-    # ComputeStatsBestModelsAfterEval(DTR_n, LTrain, DEV_n, LEval)
+    ComputeStatsBestModels(DTR_n, LTrain)
+    EvaluateAllModels(DTR_n, LTrain, DEV_n, LEval)
+    ComputeStatsBestModelsAfterEval(DTR_n, LTrain, DEV_n, LEval)

@@ -101,3 +101,21 @@ Priors:							0.5		0.1		0.9
 Quadratic LR (Prior=0.5, Lambda=1e-05):						0.104	0.203	0.449
 
 
+RBF SVM Classifiers — min DCF on the validation set using 3-fold
+Raw features — no PCA
+Priors:														0.5		0.1		0.9
+RBF SVM Balanced (Prior= 0.5, C = 1.0):						0.209	0.31	0.677
+
+
+Raw features — PCA (m = 7)
+Priors:														0.5		0.1		0.9
+RBF SVM Balanced (Prior= 0.5, C = 1.0):						0.209	0.31	0.679
+
+
+RBF SVM Classifiers — min DCF on the validation set using 3-fold
+Raw features — no PCA
+Priors:														0.5		0.1		0.9
+RBF SVM Balanced (Prior= 0.5, C = 1.0):						0.209	0.31	0.677
+
+
+Raw features — PCA (m = 7)
