@@ -129,4 +129,5 @@ dmypy.json
 .pyre/
 
 # Project folders
-plots/
+Figures/
+results/

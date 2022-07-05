@@ -1,5 +1,0 @@
-RBF SVM Classifiers — min DCF on the validation set using 5-fold
-Raw features — no PCA
-Priors:														0.5		0.1		0.9
-RBF SVM (C = 10.0):											0.167	0.417	0.655
-RBF SVM Balanced (Prior= 0.5, C = 10.0):					0.167	0.454	0.655
